@@ -3,11 +3,6 @@ package com.project.pengelolakeuangan
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,10 +10,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.project.pengelolakeuangan.data.AppDatabaseProvider
 import com.project.pengelolakeuangan.data.model.Pemasukan
-import com.project.pengelolakeuangan.data.model.Pengeluaran
 import com.project.pengelolakeuangan.ui.theme.PengelolaKeuanganTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class MainActivity : ComponentActivity() {
 
@@ -29,38 +26,26 @@ class MainActivity : ComponentActivity() {
 
         databaseProvider = AppDatabaseProvider(this)
 
-        // Contoh input data pemasukan
+        val formatterTanggal = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val formattedDate = LocalDate.now().format(formatterTanggal)
+
+        val formatterWaktu = DateTimeFormatter.ofPattern("HH:mm")
+        val formattedTime = LocalTime.now().format(formatterWaktu)
+
         val examplePemasukan = Pemasukan(
-            date = System.currentTimeMillis(),
+            tanggal = formattedDate,
+            waktu = formattedTime,
             metode = "Transfer Bank",
             sumberPemasukan = "Gaji",
             catatan = "Gaji bulan Desember",
-            nominal = 5000000.0
+            nominal = 1000000.0
         )
 
-        // Gunakan coroutine untuk operasi database
         lifecycleScope.launch {
             databaseProvider.pemasukanDao.insertPemasukan(examplePemasukan)
             val allPemasukan = databaseProvider.pemasukanDao.getAllPemasukan().first() // Mengambil data
             allPemasukan.forEach { pemasukan ->
-                Log.d("Pemasukan", "ID: ${pemasukan.id}, Nominal: ${pemasukan.nominal}")
-            }
-        }
-
-        // Contoh input data pengeluaran
-        val examplePengeluaran = Pengeluaran(
-            date = System.currentTimeMillis(),
-            metode = "Tunai",
-            tujuanPengeluaran = "Belanja bulanan",
-            catatan = "Supermarket",
-            nominal = 150000.0
-        )
-
-        lifecycleScope.launch {
-            databaseProvider.pengeluaranDao.insertPengeluaran(examplePengeluaran)
-            val allPengeluaran = databaseProvider.pengeluaranDao.getAllPengeluaran().first() // Mengambil data
-            allPengeluaran.forEach { pengeluaran ->
-                Log.d("Pengeluaran", "ID: ${pengeluaran.id}, Nominal: ${pengeluaran.nominal}")
+                Log.d("Pemasukan", "Tanggal: ${pemasukan.tanggal}, Waktu: ${pemasukan.waktu}")
             }
         }
 

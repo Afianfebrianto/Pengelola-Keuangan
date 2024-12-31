@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "pemasukan")
 data class Pemasukan(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: Long, // Gunakan tipe Long untuk menyimpan timestamp
+    val tanggal: String, // Format: "YYYY-MM-DD"
+    val waktu: String,   // Format: "HH:mm:ss"
     val metode: String, // Contoh: "Transfer Bank", "Tunai"
     val sumberPemasukan: String,
     val catatan: String?,

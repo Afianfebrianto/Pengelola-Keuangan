@@ -12,7 +12,7 @@ interface PemasukanDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPemasukan(pemasukan: Pemasukan)
 
-    @Query("SELECT * FROM pemasukan ORDER BY date DESC")
+    @Query("SELECT * FROM pemasukan ORDER BY tanggal DESC, waktu DESC")
     fun getAllPemasukan(): Flow<List<Pemasukan>>
 
     @Query("DELETE FROM pemasukan WHERE id = :id")
