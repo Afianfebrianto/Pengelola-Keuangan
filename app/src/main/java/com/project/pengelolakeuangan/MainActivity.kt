@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.project.pengelolakeuangan.data.AppDatabaseProvider
 import com.project.pengelolakeuangan.ui.navigation.MainScreen
 import com.project.pengelolakeuangan.ui.theme.PengelolaKeuanganTheme
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         databaseProvider = AppDatabaseProvider(this)
+
 
 //        val formatterTanggal = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 //        val formattedDate = LocalDate.now().format(formatterTanggal)
@@ -54,7 +56,9 @@ class MainActivity : ComponentActivity() {
 //                    )
 //                }
 //            }
-            MainScreen()
+
+            val navController = rememberNavController()
+            MainScreen(navController = navController)
         }
     }
 }

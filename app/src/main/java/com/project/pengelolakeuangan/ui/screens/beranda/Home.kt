@@ -38,13 +38,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     // State untuk tanggal (default: hari ini)
     val selectedDate = remember { mutableStateOf(LocalDate.now()) }
     val dateFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy")
