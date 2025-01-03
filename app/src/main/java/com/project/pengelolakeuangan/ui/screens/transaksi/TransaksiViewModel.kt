@@ -2,7 +2,6 @@ package com.project.pengelolakeuangan.ui.screens.transaksi
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.project.pengelolakeuangan.data.AppDatabase
@@ -18,15 +17,15 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         AppDatabase::class.java, "transaction-database"
     ).build().transactionDao()
 
-    // Mengambil semua data pemasukan
-    fun getPemasukan(): LiveData<List<Pemasukan>> {
-        return transactionDao.getAllPemasukan()
-    }
-
-    // Mengambil semua data pengeluaran
-    fun getPengeluaran(): LiveData<List<Pengeluaran>> {
-        return transactionDao.getAllPengeluaran()
-    }
+//    // Mengambil semua data pemasukan
+//    fun getPemasukan(): LiveData<List<Pemasukan>> {
+//        return transactionDao.getAllPemasukan()
+//    }
+//
+//    // Mengambil semua data pengeluaran
+//    fun getPengeluaran(): LiveData<List<Pengeluaran>> {
+//        return transactionDao.getAllPengeluaran()
+//    }
 
 
     // Fungsi untuk menyimpan pemasukan
