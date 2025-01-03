@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.DropdownMenu
@@ -61,7 +62,7 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        painter = painterResource(R.drawable.downgreen),
+                        painter = painterResource(R.drawable.downngreen),
                         contentDescription = "Pemasukan",
                         tint = Color.White
                     )
@@ -77,7 +78,7 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        painter = painterResource(R.drawable.upred),
+                        painter = painterResource(R.drawable.upredd),
                         contentDescription = "Pengeluaran",
                         tint = Color.White
                     )
@@ -89,16 +90,14 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit) {
     }
 }
 
+
 @Composable
 fun TransactionFormScreen(
-    isIncome: Boolean, // true = pemasukan, false = pengeluaran
+    isIncome: Boolean,
     onSave: (TransactionData) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    viewModel: TransaksiViewModel
 ) {
-    val title = if (isIncome) "Pemasukan" else "Pengeluaran"
-    val transactionType = if (isIncome) "Sumber Pemasukan" else "Tujuan Pengeluaran"
-
-    // State untuk form input
     val nominal = remember { mutableStateOf("") }
     val selectedDate = remember { mutableStateOf(LocalDate.now()) }
     val method = remember { mutableStateOf("Transfer Bank") }
@@ -118,6 +117,26 @@ fun TransactionFormScreen(
         )
     }
 
+    // Menyimpan data transaksi
+    val showDialog = remember { mutableStateOf(false) }
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = { Text("Data Berhasil Disimpan") },
+            text = { Text("Transaksi Anda telah berhasil disimpan.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog.value = false
+                        onCancel() // Navigasi kembali setelah konfirmasi
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -125,7 +144,7 @@ fun TransactionFormScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = title,
+            text = if (isIncome) "Pemasukan" else "Pengeluaran",
             style = MaterialTheme.typography.h5,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -158,7 +177,7 @@ fun TransactionFormScreen(
         OutlinedTextField(
             value = typeDetail.value,
             onValueChange = { typeDetail.value = it },
-            label = { Text(transactionType) },
+            label = { Text(if (isIncome) "Sumber Pemasukan" else "Tujuan Pengeluaran") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -177,22 +196,24 @@ fun TransactionFormScreen(
                 Text("Batal")
             }
             Button(onClick = {
-                onSave(
-                    TransactionData(
-                        isIncome = isIncome,
-                        nominal = nominal.value.toIntOrNull() ?: 0,
-                        date = selectedDate.value,
-                        method = method.value,
-                        detail = typeDetail.value,
-                        note = note.value
-                    )
+                val transaction = TransactionData(
+                    isIncome = isIncome,
+                    nominal = nominal.value.toIntOrNull() ?: 0,
+                    date = selectedDate.value,
+                    method = method.value,
+                    detail = typeDetail.value,
+                    note = note.value
                 )
+                onSave(transaction)
+                showDialog.value = true
             }) {
                 Text("Simpan")
             }
         }
     }
 }
+
+
 
 @Composable
 fun DropdownMenu(

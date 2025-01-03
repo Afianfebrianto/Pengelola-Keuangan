@@ -1,6 +1,7 @@
 package com.project.pengelolakeuangan.ui.screens.beranda
 
 import android.icu.text.DecimalFormat
+import android.icu.text.NumberFormat
 import android.icu.util.Calendar
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -294,8 +296,53 @@ fun DateNavigator(
     }
 }
 
+@Composable
+fun TransactionItem(transaction: TransactionData) {
+    // Format nominal
+    val formattedNominal = if (transaction.isIncome) {
+        "+Rp ${formatToRupiah(transaction.nominal)}"
+    } else {
+        "-Rp ${formatToRupiah(transaction.nominal)}"
+    }
 
-fun formatToRupiah(value: Int): String {
-    val formatter = DecimalFormat("#,###")
-    return formatter.format(value)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        elevation = 4.dp,
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, Color.Gray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = transaction.date.format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
+                style = MaterialTheme.typography.body2
+            )
+            Text(
+                text = "Metode: ${transaction.method}",
+                style = MaterialTheme.typography.body2
+            )
+            Text(
+                text = if (transaction.isIncome) "Sumber Pemasukan: ${transaction.detail}" else "Tujuan Pengeluaran: ${transaction.detail}",
+                style = MaterialTheme.typography.body2
+            )
+            Text(
+                text = formattedNominal,
+                style = MaterialTheme.typography.h6,
+                color = if (transaction.isIncome) Color(0xFF4CAF50) else Color(0xFFF44336)
+            )
+        }
+    }
 }
+
+
+// Helper function to format number to Rupiah
+fun formatToRupiah(amount: Double): String {
+    val numberFormat = NumberFormat.getNumberInstance(java.util.Locale("id", "ID"))
+    return numberFormat.format(amount)
+}
+
+//fun formatToRupiah(value: Int): String {
+//    val formatter = DecimalFormat("#,###")
+//    return formatter.format(value)
+//}
