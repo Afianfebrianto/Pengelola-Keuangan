@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

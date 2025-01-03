@@ -15,9 +15,12 @@ interface TransactionDao {
     @Insert
     suspend fun insertPengeluaran(pengeluaran: Pengeluaran)
 
+    // Mendapatkan semua data pemasukan
     @Query("SELECT * FROM pemasukan")
     suspend fun getAllPemasukan(): List<Pemasukan>
 
+    // Mendapatkan semua data pengeluaran
     @Query("SELECT * FROM pengeluaran")
     suspend fun getAllPengeluaran(): List<Pengeluaran>
+
 }

@@ -27,10 +27,11 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+fun AppNavGraph(navController: NavHostController,viewModel: TransaksiViewModel, modifier: Modifier = Modifier) {
     NavHost(navController = navController, startDestination = Screen.Home.route, modifier = Modifier) {
         composable(Screen.Home.route) {
-            HomeScreen(navController)
+            // Pastikan viewModel diteruskan ke HomeScreen
+            HomeScreen(navController = navController, viewModel = viewModel)
         }
         composable(Screen.Transaction.route) {
             TransactionsScreen { isIncome ->

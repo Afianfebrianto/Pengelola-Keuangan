@@ -13,10 +13,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.project.pengelolakeuangan.R
+import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 
+
+//@Composable
+//fun MainScreen(navController: NavHostController) {
+//    val navBackStackEntry = navController.currentBackStackEntryAsState()
+//    val currentRoute = navBackStackEntry.value?.destination?.route
+//
+//    Scaffold(
+//        bottomBar = {
+//            BottomNavigationBar(
+//                currentRoute = currentRoute,
+//                onItemSelected = { route -> navController.navigate(route) }
+//            )
+//        }
+//    ) { innerPadding ->
+//        // Gunakan innerPadding untuk memastikan konten tidak terhalang bottom bar
+//        AppNavGraph(navController = navController, modifier = Modifier.padding(innerPadding))
+//    }
+//}
 
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
@@ -29,64 +48,9 @@ fun MainScreen(navController: NavHostController) {
         }
     ) { innerPadding ->
         // Gunakan innerPadding untuk memastikan konten tidak terhalang bottom bar
-        AppNavGraph(navController = navController, modifier = Modifier.padding(innerPadding))
+        AppNavGraph(navController = navController, viewModel = viewModel, modifier = Modifier.padding(innerPadding))
     }
 }
-//@Composable
-//fun MainScreen() {
-//    val navController = rememberNavController()
-//
-//    Scaffold(
-//        bottomBar = {
-//            BottomNavigationBar(navController = navController)
-//        }
-//    ) { innerPadding ->
-//        NavHost(
-//            navController = navController,
-//            startDestination = "home",
-//            modifier = Modifier.padding(innerPadding)
-//        ) {
-//            composable("home") { HomeScreen() }
-//            composable("transactions") { TransactionsScreen() }
-//            composable("rekap") { RekapScreen() }
-//            composable("profile") { ProfileScreen() }
-//        }
-//    }
-//}
-
-//@Composable
-//fun BottomNavigationBar(navController: NavController) {
-//    val items = getNavigationItems() // Dapatkan daftar item navigasi
-//
-//    BottomNavigation(
-//        backgroundColor = Color.White,
-//        elevation = 8.dp
-//    ) {
-//        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-//        items.forEach { item ->
-//            BottomNavigationItem(
-//                icon = { item.icon() }, // Panggil fungsi ikon
-//                label = {
-//                    Text(
-//                        text = item.label,
-//                        style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold)
-//                    )
-//                },
-//                selected = currentRoute == item.route,
-//                selectedContentColor = Color(0xFFFF6F61), // Warna saat dipilih
-//                unselectedContentColor = Color(0xFF999999), // Warna saat tidak dipilih
-//                onClick = {
-//                    navController.navigate(item.route) {
-//                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-//                        launchSingleTop = true
-//                        restoreState = true
-//                    }
-//                }
-//            )
-//        }
-//    }
-//}
-
 
 @Composable
 fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit) {
