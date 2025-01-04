@@ -12,6 +12,7 @@ import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
 import com.project.pengelolakeuangan.ui.screens.beranda.HomeScreen
 import com.project.pengelolakeuangan.ui.screens.profile.ProfileScreen
+import com.project.pengelolakeuangan.ui.screens.profile.SettingsScreen
 import com.project.pengelolakeuangan.ui.screens.rekap.RekapScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionFormScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionsScreen
@@ -40,6 +41,10 @@ fun AppNavGraph(navController: NavHostController,viewModel: TransaksiViewModel, 
                 navController.navigate(Screen.Form.createRoute(isIncome))
             }
         }
+
+        composable("settings") {
+            SettingsScreen(viewModel = viewModel)
+        }
         composable(Screen.Rekap.route) {
             // Mendapatkan instance ViewModel
             val pemasukan by viewModel.getTotalPemasukan().observeAsState(0.0) // Nilai default 0.0
@@ -55,7 +60,7 @@ fun AppNavGraph(navController: NavHostController,viewModel: TransaksiViewModel, 
             )
         }
         composable(Screen.Account.route) {
-            ProfileScreen()
+            ProfileScreen(navController = navController, viewModel = viewModel)
         }
         composable(Screen.Form.route) { backStackEntry ->
             val isIncome = backStackEntry.arguments?.getString("isIncome")?.toBoolean() ?: true

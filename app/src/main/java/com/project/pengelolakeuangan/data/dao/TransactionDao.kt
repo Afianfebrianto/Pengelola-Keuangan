@@ -47,4 +47,12 @@ interface TransactionDao {
     @Query("SELECT SUM(nominal) FROM pengeluaran WHERE strftime('%m', tanggal) = :month AND strftime('%Y', tanggal) = :year")
     suspend fun getTotalPengeluaranByMonth(month: String, year: String): Double?
 
+    // Menghapus semua data pemasukan
+    @Query("DELETE FROM pemasukan")
+    suspend fun deleteAllPemasukan()
+
+    // Menghapus semua data pengeluaran
+    @Query("DELETE FROM pengeluaran")
+    suspend fun deleteAllPengeluaran()
+
 }

@@ -3,7 +3,6 @@ package com.project.pengelolakeuangan.ui.screens.transaksi
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
@@ -121,27 +120,12 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun getMonthlyTotals(selectedMonth: Month, selectedYear: Int): Pair<Double, Double> {
-        val monthString = if (selectedMonth.value < 10) "0${selectedMonth.value}" else "${selectedMonth.value}"
-        val yearString = selectedYear.toString()
-
-        var pemasukan = 0.0
-        var pengeluaran = 0.0
-
+    fun clearDatabase() {
+        // Menghapus semua data transaksi dari database
         viewModelScope.launch {
-            pemasukan = transactionDao.getTotalPemasukanByMonth(monthString, yearString) ?: 0.0
-            pengeluaran = transactionDao.getTotalPengeluaranByMonth(monthString, yearString) ?: 0.0
-        }
-
-        return Pair(pemasukan, pengeluaran)
-    }
-
-    val totalSaldo: LiveData<Double> = MediatorLiveData<Double>().apply {
-        addSource(getTotalPemasukan()) { pemasukan ->
-            value = (pemasukan ?: 0.0) - (getTotalPengeluaran().value ?: 0.0)
-        }
-        addSource(getTotalPengeluaran()) { pengeluaran ->
-            value = (getTotalPemasukan().value ?: 0.0) - (pengeluaran ?: 0.0)
+            // Menghapus semua pemasukan dan pengeluaran
+            transactionDao.deleteAllPemasukan()
+            transactionDao.deleteAllPengeluaran()
         }
     }
 
