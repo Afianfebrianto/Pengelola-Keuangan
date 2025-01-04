@@ -1,71 +1,137 @@
 package com.project.pengelolakeuangan.ui.screens.rekap
 
-import androidx.compose.foundation.Canvas
+import android.icu.util.Calendar
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.project.pengelolakeuangan.ui.screens.DonutChart
+import com.project.pengelolakeuangan.ui.screens.FinancialSummary
+import java.time.Month
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
-fun RekapScreen(
-){
-    Text("Rekap Screen")
-}
+fun RekapScreen(pemasukan: Double, pengeluaran: Double, onMonthSelected: (Month) -> Unit) {
+    val saldo = pemasukan - pengeluaran
 
-@Composable
-fun PieChart(
-    data: Map<String, Float>, // Data untuk grafik, seperti {"Pemasukan": 60f, "Pengeluaran": 40f}
-    colors: List<Color>,      // Warna untuk setiap bagian grafik
-    modifier: Modifier = Modifier
-) {
-    val total = data.values.sum()
-    val proportions = data.values.map { it / total }
-    val sweepAngles = proportions.map { 360 * it }
+//    Column(modifier = Modifier.fillMaxSize()) {
+//        // Header
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
 
-    Canvas(modifier = modifier) {
-        var startAngle = 0f
-        for ((index, sweepAngle) in sweepAngles.withIndex()) {
-            drawArc(
-                color = colors[index],
-                startAngle = startAngle,
-                sweepAngle = sweepAngle,
-                useCenter = true, // Mengisi lingkaran dari tengah
-                size = Size(size.minDimension, size.minDimension),
-                topLeft = Offset(
-                    (size.width - size.minDimension) / 2,
-                    (size.height - size.minDimension) / 2
-                )
-            )
-            startAngle += sweepAngle
-        }
-    }
-}
-
-
-
-// Helper Composable for Stats
-@Composable
-fun StatCard(title: String, amount: Double, color: Color) {
-    Card(
+    Column(
         modifier = Modifier
-//            .weight(1f)
-            .padding(horizontal = 4.dp),
-        backgroundColor = color.copy(alpha = 0.1f)
+            .fillMaxSize()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(8.dp)
+        // Header Section
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = title, style = MaterialTheme.typography.subtitle1)
-            Text(text = "Rp${amount}", style = MaterialTheme.typography.h6, color = color)
+            RekapHeader(onMonthSelected = onMonthSelected)
+        }
+
+        FinancialSummary(
+            totalIncome = pemasukan,
+            totalExpense = pengeluaran,
+            balance = saldo
+        )
+
+        // Donut Chart Section
+        DonutChart(pemasukan, pengeluaran)
+    }
+}
+
+@Composable
+fun RekapHeader(onMonthSelected: (Month) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Download Icon
+        IconButton(onClick = { /* TODO: Implement download action */ }) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = "Download",
+                tint = Color.Black
+            )
+        }
+
+        // Month Picker
+        MonthPicker(onMonthSelected = onMonthSelected)
+
+        // Search Icon
+        IconButton(onClick = { /* TODO: Implement search action */ }) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                tint = Color.Black
+            )
         }
     }
 }
+
+@Composable
+fun MonthPicker(onMonthSelected: (Month) -> Unit) {
+    val months = Month.values()
+    val currentMonth = remember { Calendar.getInstance().get(Calendar.MONTH) }
+    var selectedMonth = months[currentMonth]
+
+    DropdownMenu(
+        expanded = false,
+        onDismissRequest = { /* TODO: Handle dismiss */ }
+    ) {
+        months.forEach { month ->
+            DropdownMenuItem(
+                text = { Text(month.getDisplayName(TextStyle.FULL, Locale.getDefault())) },
+                onClick = {
+                    selectedMonth = month
+                    onMonthSelected(month)
+                }
+            )
+        }
+    }
+
+    Text(
+        text = selectedMonth.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .clickable { /* TODO: Show Dropdown */ },
+        fontSize = 16.sp
+    )
+}
+
+
+
+
+

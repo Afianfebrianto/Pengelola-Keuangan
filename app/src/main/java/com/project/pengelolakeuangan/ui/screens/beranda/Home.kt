@@ -1,8 +1,6 @@
 package com.project.pengelolakeuangan.ui.screens.beranda
 
-import android.icu.text.NumberFormat
 import android.icu.util.Calendar
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,9 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -37,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.project.pengelolakeuangan.ui.screens.FinancialSummary
+import com.project.pengelolakeuangan.ui.screens.formatToRupiah
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 import java.time.LocalDate
@@ -52,18 +50,6 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
     // Pastikan data transaksi sudah ada
     LaunchedEffect(Unit) {
         viewModel.getAllTransactions()  // Memanggil getAllTransactions saat HomeScreen pertama kali ditampilkan
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.getAllTransactions()  // Memanggil getAllTransactions saat HomeScreen pertama kali ditampilkan
-        println("Transactions: $transactions")  // Debug log
-    }
-
-    if (transactions.isEmpty()) {
-        // Tampilkan pesan atau status loading jika transaksi kosong
-        println("No transactions available")
-    } else {
-        // Lanjutkan dengan perhitungan dan tampilan saldo
     }
 
     // State untuk tanggal (default: hari ini)
@@ -134,58 +120,11 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
             }
         }
 
-        // Ringkasan Keuangan
-        Card(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            elevation = 4.dp,
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(1.dp, Color.Gray) // Batas Card
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Pemasukan", style = MaterialTheme.typography.body1)
-                        Text(
-                            text = "${formatToRupiah(totalIncome)}",
-                            style = MaterialTheme.typography.h6,
-                            color = Color(0xFF4CAF50)
-                        )
-                    }
-
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Pengeluaran", style = MaterialTheme.typography.body1)
-                        Text(
-                            text = "${formatToRupiah(totalExpense)}",
-                            style = MaterialTheme.typography.h6,
-                            color = Color(0xFFF44336)
-                        )
-                    }
-                }
-
-                Divider(color = Color.Gray, thickness = 1.dp)
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Saldo", style = MaterialTheme.typography.body1)
-                    Text(
-                        text = "${formatToRupiah(balance)}",
-                        style = MaterialTheme.typography.h6,
-                        color = Color(0xFF2196F3)
-                    )
-                }
-            }
-        }
+        FinancialSummary(
+            totalIncome = totalIncome.toDouble(),
+            totalExpense = totalExpense.toDouble(),
+            balance = balance.toDouble()
+        )
 
         // Daftar Transaksi Terbaru
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -257,7 +196,3 @@ fun DatePickerDialog(
 }
 
 
-fun formatToRupiah(amount: Int): String {
-    val numberFormat = NumberFormat.getCurrencyInstance(java.util.Locale("id", "ID"))
-    return numberFormat.format(amount)
-}

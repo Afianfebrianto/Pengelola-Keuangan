@@ -1,6 +1,8 @@
 package com.project.pengelolakeuangan.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -39,7 +41,18 @@ fun AppNavGraph(navController: NavHostController,viewModel: TransaksiViewModel, 
             }
         }
         composable(Screen.Rekap.route) {
-            RekapScreen()
+            // Mendapatkan instance ViewModel
+            val pemasukan by viewModel.getTotalPemasukan().observeAsState(0.0) // Nilai default 0.0
+            val pengeluaran by viewModel.getTotalPengeluaran().observeAsState(0.0) // Nilai default 0.0
+
+            RekapScreen(
+                pemasukan = pemasukan,
+                pengeluaran = pengeluaran,
+                onMonthSelected = { selectedMonth ->
+                    // TODO: Implementasi saat pengguna memilih bulan di MonthPicker
+                    viewModel.loadTransactionsForMonth(selectedMonth)
+                }
+            )
         }
         composable(Screen.Account.route) {
             ProfileScreen()
