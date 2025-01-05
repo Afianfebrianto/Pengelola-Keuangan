@@ -64,6 +64,7 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
     LaunchedEffect(Unit) {
         name = getStoredName(context)
         newName = name
+        viewModel.getAllTransactions()
     }
 
     Column(

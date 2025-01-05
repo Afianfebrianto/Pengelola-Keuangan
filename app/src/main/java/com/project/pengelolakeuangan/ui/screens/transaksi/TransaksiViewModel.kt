@@ -10,6 +10,7 @@ import com.project.pengelolakeuangan.data.AppDatabase
 import com.project.pengelolakeuangan.data.dao.TransactionDao
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Month
@@ -126,6 +127,37 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
             // Menghapus semua pemasukan dan pengeluaran
             transactionDao.deleteAllPemasukan()
             transactionDao.deleteAllPengeluaran()
+        }
+    }
+
+    // Fungsi untuk memuat transaksi berdasarkan bulan dan tahun
+    fun loadTransactionsForMonth(month: Int, year: Int) {
+        // Logika untuk memuat transaksi berdasarkan bulan dan tahun
+        // Pastikan Anda mengubah query Room atau data lainnya berdasarkan bulan dan tahun
+    }
+
+
+
+    //new cuk
+    // LiveData untuk menampilkan hasil pencarian
+    private val _searchResults = MutableLiveData<List<TransactionData>>()
+    val searchResults: LiveData<List<TransactionData>> = _searchResults
+
+    // Fungsi untuk melakukan pencarian transaksi berdasarkan query
+    fun searchTransactions(query: String) {
+        viewModelScope.launch {
+            // Menggabungkan hasil pencarian pemasukan dan pengeluaran
+            val pemasukanFlow = transactionDao.searchPemasukan(query)
+            val pengeluaranFlow = transactionDao.searchPengeluaran(query)
+
+            // Kombinasikan data dari kedua tabel
+            pemasukanFlow.combine(pengeluaranFlow) { pemasukanList, pengeluaranList ->
+                (pemasukanList.map { it.toTransactionData(true) } +
+                        pengeluaranList.map { it.toTransactionData(false) })
+                    .sortedByDescending { it.date } // Urutkan berdasarkan tanggal
+            }.collect { combinedResults ->
+                _searchResults.postValue(combinedResults) // Post hasil pencarian ke LiveData
+            }
         }
     }
 

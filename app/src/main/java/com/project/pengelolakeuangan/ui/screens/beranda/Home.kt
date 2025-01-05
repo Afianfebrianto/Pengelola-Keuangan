@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.project.pengelolakeuangan.ui.navigation.Screen
 import com.project.pengelolakeuangan.ui.screens.FinancialSummary
 import com.project.pengelolakeuangan.ui.screens.formatToRupiah
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
@@ -112,7 +113,7 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
                 }
             }
 
-            IconButton(onClick = { /* Action for search button */ }) {
+            IconButton(onClick = { navController.navigate(Screen.Search.route)}) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search"

@@ -15,25 +15,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 
-
-//@Composable
-//fun MainScreen(navController: NavHostController) {
-//    val navBackStackEntry = navController.currentBackStackEntryAsState()
-//    val currentRoute = navBackStackEntry.value?.destination?.route
-//
-//    Scaffold(
-//        bottomBar = {
-//            BottomNavigationBar(
-//                currentRoute = currentRoute,
-//                onItemSelected = { route -> navController.navigate(route) }
-//            )
-//        }
-//    ) { innerPadding ->
-//        // Gunakan innerPadding untuk memastikan konten tidak terhalang bottom bar
-//        AppNavGraph(navController = navController, modifier = Modifier.padding(innerPadding))
-//    }
-//}
-
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -41,16 +22,24 @@ fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(
-                currentRoute = currentRoute,
-                onItemSelected = { route -> navController.navigate(route) }
-            )
+            // Tampilkan BottomNavigation hanya jika bukan di layar Settings
+            if (currentRoute in listOf(Screen.Home.route, Screen.Transaction.route, Screen.Rekap.route, Screen.Account.route)) {
+                BottomNavigationBar(
+                    currentRoute = currentRoute,
+                    onItemSelected = { route -> navController.navigate(route) }
+                )
+            }
         }
     ) { innerPadding ->
         // Gunakan innerPadding untuk memastikan konten tidak terhalang bottom bar
-        AppNavGraph(navController = navController, viewModel = viewModel, modifier = Modifier.padding(innerPadding))
+        AppNavGraph(
+            navController = navController,
+            viewModel = viewModel,
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
+
 
 @Composable
 fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit) {
@@ -78,32 +67,3 @@ fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit)
     }
 }
 
-//@Composable
-//fun BottomNavigationBar(navController: NavController) {
-//    val items = listOf(
-//        NavigationItem("Home", "home", Icons.Default.Home),
-//        NavigationItem("Transactions", "transactions", Icons.Default.List),
-//        NavigationItem("Analytics", "analytics", Icons.Default.Add),
-//        NavigationItem("Settings", "settings", Icons.Default.Settings)
-//    )
-//
-//    BottomNavigation{
-//        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-//        items.forEach { item ->
-//            BottomNavigationItem(
-//                icon = { Icon(item.icon, contentDescription = item.label) },
-//                label = { Text(item.label) },
-//                selected = currentRoute == item.route,
-//                onClick = {
-//                    navController.navigate(item.route) {
-//                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-//                        launchSingleTop = true
-//                        restoreState = true
-//                    }
-//                }
-//            )
-//        }
-//    }
-//}
-
-//data class NavigationItem(val label: String, val route: String, val icon: ImageVector)

@@ -8,29 +8,48 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.TextField
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.project.pengelolakeuangan.ui.screens.beranda.TransactionItem
+import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
+import java.time.LocalDate
 
 @Composable
 fun DonutChart(pemasukan: Double, pengeluaran: Double) {
-    val total = pemasukan + pengeluaran
-    val pemasukanPercentage = if (total > 0) (pemasukan / total).toFloat() else 0f
+    val total = pemasukan
     val pengeluaranPercentage = if (total > 0) (pengeluaran / total).toFloat() else 0f
+    val pemasukanPercentage = if (pengeluaran >0)( 1f - pengeluaranPercentage) else 0f // Sisanya adalah pemasukan
 
     Box(
         modifier = Modifier
@@ -160,6 +179,143 @@ fun FinancialSummary(
         }
     }
 }
+
+//@Composable
+//fun SearchScreen(
+//    transactions: List<TransactionData>,
+//    onBackClick: () -> Unit
+//) {
+//    var searchQuery by remember { mutableStateOf("") }
+//    val filteredTransactions = transactions.filter {
+//        it.detail.contains(searchQuery, ignoreCase = true)
+//    }
+//
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = { Text("Pencarian", color = Color.White) },
+//                backgroundColor = Color(0xFFD81B60),
+//                navigationIcon = {
+//                    IconButton(onClick = { onBackClick() }) {
+//                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+//                    }
+//                }
+//            )
+//        }
+//    ) { paddingValues ->
+//        Column(modifier = Modifier.padding(paddingValues)) {
+//            TextField(
+//                value = searchQuery,
+//                onValueChange = { searchQuery = it },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                placeholder = { Text("Mulai Mengetik...") },
+//                leadingIcon = {
+//                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
+//                }
+//            )
+//
+//            LazyColumn(modifier = Modifier.fillMaxSize()) {
+//                items(filteredTransactions) { transaction ->
+//                    TransactionItem(transaction)
+//                }
+//            }
+//        }
+//    }
+//}
+
+@Composable
+fun SearchScreen(
+    transactions: List<TransactionData>,
+    onBackClick: () -> Unit
+) {
+
+
+    // State untuk menyimpan query pencarian
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Filter transaksi berdasarkan pencarian
+    val filteredTransactions = transactions.filter {
+        it.detail.contains(searchQuery, ignoreCase = true) ||
+                it.note.contains(searchQuery, ignoreCase = true)
+    }
+
+    // Scaffold untuk layout dasar dengan top bar
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Pencarian", color = Color.White) },
+                backgroundColor = Color(0xFFD81B60),
+                navigationIcon = {
+                    IconButton(onClick = { onBackClick() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        // Column untuk konten utama
+        Column(modifier = Modifier.padding(paddingValues)) {
+            // TextField untuk memasukkan kata kunci pencarian
+            TextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                placeholder = { Text("Mulai Mengetik...") },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
+                },
+                singleLine = true
+            )
+
+            // Jika tidak ada transaksi yang ditemukan, tampilkan pesan
+            if (filteredTransactions.isEmpty() && searchQuery.isNotEmpty()) {
+                Text(
+                    text = "Tidak ada hasil yang ditemukan",
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                // Menampilkan daftar transaksi yang difilter
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(filteredTransactions) { transaction ->
+                        // Menampilkan item transaksi menggunakan TransactionItem
+                        TransactionItem(transaction)
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun SearchScreenPreview() {
+    val dummyTransactions = listOf(
+        TransactionData(
+            isIncome = true,
+            nominal = 5000000,
+            date = LocalDate.now(),
+            method = "Transfer Bank",
+            detail = "Gaji Bulanan",
+            note = "Gaji bulan Januari"
+        ),
+        TransactionData(
+            isIncome = false,
+            nominal = 150000,
+            date = LocalDate.now(),
+            method = "Tunai",
+            detail = "Belanja",
+            note = "Belanja bulanan di minimarket"
+        )
+    )
+    SearchScreen(transactions = dummyTransactions, onBackClick = {})
+}
+
 
 fun formatToRupiah(amount: Int): String {
     val numberFormat = NumberFormat.getCurrencyInstance(java.util.Locale("id", "ID"))

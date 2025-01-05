@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TransactionDao {
@@ -54,5 +55,12 @@ interface TransactionDao {
     // Menghapus semua data pengeluaran
     @Query("DELETE FROM pengeluaran")
     suspend fun deleteAllPengeluaran()
+
+    @Query("SELECT * FROM pemasukan WHERE sumberPemasukan LIKE '%' || :query || '%' OR catatan LIKE '%' || :query || '%'")
+   fun searchPemasukan(query: String): Flow<List<Pemasukan>>
+
+   @Query("SELECT * FROM pengeluaran WHERE tujuanPengeluaran LIKE '%' || :query || '%' OR catatan LIKE '%' || :query || '%'")
+  fun searchPengeluaran(query: String): Flow<List<Pengeluaran>>
+
 
 }

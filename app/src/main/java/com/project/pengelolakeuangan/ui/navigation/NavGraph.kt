@@ -3,6 +3,8 @@ package com.project.pengelolakeuangan.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -10,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
+import com.project.pengelolakeuangan.ui.screens.SearchScreen
 import com.project.pengelolakeuangan.ui.screens.beranda.HomeScreen
 import com.project.pengelolakeuangan.ui.screens.profile.ProfileScreen
 import com.project.pengelolakeuangan.ui.screens.profile.SettingsScreen
@@ -18,6 +21,7 @@ import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionFormScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionsScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 import java.time.LocalTime
+import java.util.Calendar
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
@@ -27,19 +31,28 @@ sealed class Screen(val route: String) {
     object Form : Screen("form/{isIncome}") {
         fun createRoute(isIncome: Boolean) = "form/$isIncome"
     }
+    object Search : Screen("search")
 }
 
 @Composable
-fun AppNavGraph(navController: NavHostController,viewModel: TransaksiViewModel, modifier: Modifier = Modifier) {
-    NavHost(navController = navController, startDestination = Screen.Home.route, modifier = Modifier) {
+fun AppNavGraph(
+    navController: NavHostController,
+    viewModel: TransaksiViewModel,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Home.route,
+        modifier = Modifier
+    ) {
         composable(Screen.Home.route) {
             // Pastikan viewModel diteruskan ke HomeScreen
             HomeScreen(navController = navController, viewModel = viewModel)
         }
         composable(Screen.Transaction.route) {
-            TransactionsScreen { isIncome ->
+            TransactionsScreen({ isIncome ->
                 navController.navigate(Screen.Form.createRoute(isIncome))
-            }
+            }, viewModel = viewModel)
         }
 
         composable("settings") {
@@ -48,15 +61,33 @@ fun AppNavGraph(navController: NavHostController,viewModel: TransaksiViewModel, 
         composable(Screen.Rekap.route) {
             // Mendapatkan instance ViewModel
             val pemasukan by viewModel.getTotalPemasukan().observeAsState(0.0) // Nilai default 0.0
-            val pengeluaran by viewModel.getTotalPengeluaran().observeAsState(0.0) // Nilai default 0.0
+            val pengeluaran by viewModel.getTotalPengeluaran()
+                .observeAsState(0.0) // Nilai default 0.0
 
+            // Simpan bulan dan tahun yang dipilih
+            val selectedMonth =
+                remember { mutableStateOf(Calendar.getInstance().get(Calendar.MONTH)) }
+            val selectedYear =
+                remember { mutableStateOf(Calendar.getInstance().get(Calendar.YEAR)) }
+
+
+
+            // RekapScreen dengan pengambilan pemasukan dan pengeluaran serta pengaturan bulan dan tahun
             RekapScreen(
                 pemasukan = pemasukan,
                 pengeluaran = pengeluaran,
-                onMonthSelected = { selectedMonth ->
-                    // TODO: Implementasi saat pengguna memilih bulan di MonthPicker
-                    viewModel.loadTransactionsForMonth(selectedMonth)
-                }
+                onMonthYearSelected = { month, year ->
+                    // Set bulan dan tahun yang dipilih
+                    selectedMonth.value = month
+                    selectedYear.value = year
+
+                    // Panggil ViewModel untuk memuat transaksi berdasarkan bulan dan tahun yang dipilih
+                    viewModel.loadTransactionsForMonth(month, year)
+                },
+                selectedMonth = selectedMonth.value,
+                selectedYear = selectedYear.value,
+                navController
+
             )
         }
         composable(Screen.Account.route) {
@@ -103,5 +134,17 @@ fun AppNavGraph(navController: NavHostController,viewModel: TransaksiViewModel, 
                 viewModel = viewModel // Pass the viewModel to the form screen
             )
         }
+
+        // Menambahkan rute untuk SearchScreen
+        composable(Screen.Search.route) {
+            // Mengambil data transaksi dari viewModel
+            val transactions by viewModel.transactions.observeAsState(emptyList()) // Pastikan transactions adalah LiveData atau StateFlow
+
+            // Navigasi ke SearchScreen dan meneruskan transaksi serta onBackClick
+            SearchScreen(
+                transactions = transactions,
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
+}
