@@ -15,13 +15,13 @@ import com.project.pengelolakeuangan.data.model.Pengeluaran
 import com.project.pengelolakeuangan.ui.screens.DownloadScreen
 import com.project.pengelolakeuangan.ui.screens.SearchScreen
 import com.project.pengelolakeuangan.ui.screens.beranda.HomeScreen
-import com.project.pengelolakeuangan.ui.screens.createPDF
 import com.project.pengelolakeuangan.ui.screens.profile.ProfileScreen
 import com.project.pengelolakeuangan.ui.screens.profile.SettingsScreen
 import com.project.pengelolakeuangan.ui.screens.rekap.RekapScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionFormScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionsScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
+import createPDF
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
@@ -42,6 +42,7 @@ fun AppNavGraph(
     viewModel: TransaksiViewModel,
     modifier: Modifier = Modifier
 ) {
+
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
@@ -67,19 +68,29 @@ fun AppNavGraph(
             // Handling the onDownloadClick with coroutine scope
             val coroutineScope = rememberCoroutineScope()
 
+            // Ambil data transaksi
+            val viewModel: TransaksiViewModel = viewModel()
+            val pemasukanList by viewModel.getAllPemasukan().observeAsState(emptyList())
+            val pengeluaranList by viewModel.getAllPengeluaran().observeAsState(emptyList())
+
+            // Pastikan data sudah di-load sebelum melakukan download
             DownloadScreen(
                 navController = navController,
                 onDownloadClick = { startDate, endDate ->
                     coroutineScope.launch {
+                        // Panggil createPDF dengan data pemasukan dan pengeluaran yang benar
                         createPDF(
                             context = context,
                             startDate = startDate,
-                            endDate = endDate
+                            endDate = endDate,
+                            pemasukanList = pemasukanList,  // List<Pemasukan>
+                            pengeluaranList = pengeluaranList // List<Pengeluaran>
                         )
                     }
                 }
             )
         }
+
 
         composable(Screen.Rekap.route) {
             RekapScreen(navController = navController, viewModel = viewModel)

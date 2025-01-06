@@ -17,4 +17,10 @@ interface PemasukanDao {
 
     @Query("DELETE FROM pemasukan WHERE id = :id")
     suspend fun deletePemasukanById(id: Int)
+
+    @Query("SELECT * FROM pemasukan WHERE tanggal BETWEEN :startDate AND :endDate")
+    fun getPemasukanBetweenDates(startDate: String, endDate: String): List<Pemasukan>
+
+    @Query("SELECT SUM(nominal) FROM pemasukan WHERE tanggal BETWEEN :startDate AND :endDate")
+    fun getTotalPemasukan(startDate: String, endDate: String): Double
 }

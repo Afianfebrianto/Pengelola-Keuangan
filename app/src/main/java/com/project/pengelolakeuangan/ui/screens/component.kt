@@ -1,11 +1,6 @@
 package com.project.pengelolakeuangan.ui.screens
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Paint
-import android.graphics.Typeface
-import android.graphics.pdf.PdfDocument
 import android.icu.text.NumberFormat
 import android.icu.util.Calendar
 import android.widget.Toast
@@ -40,6 +35,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,11 +52,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.screens.beranda.TransactionItem
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
-import java.io.File
-import java.io.FileOutputStream
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -319,6 +312,16 @@ fun DownloadScreen(
     val showDatePicker = remember { mutableStateOf(false to "start") } // ("start" or "end")
 
     val isValidPeriod = startDate.value.plusYears(1).isAfter(endDate.value)
+    var progressBarVisible by remember { mutableStateOf(false) } // State untuk ProgressBar
+
+    // Box digunakan untuk menempatkan elemen di tengah layar
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // ProgressBar yang akan ditampilkan saat proses download berlangsung
+        if (progressBarVisible) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
 
     Column(
         modifier = Modifier
@@ -343,7 +346,10 @@ fun DownloadScreen(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = "Pilih Periode\nRentang periode maksimum 1 tahun.", style = MaterialTheme.typography.body1)
+        Text(
+            text = "Pilih Periode\nRentang periode maksimum 1 tahun.",
+            style = MaterialTheme.typography.body1
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(text = "Dari*", style = MaterialTheme.typography.body2)
@@ -375,17 +381,20 @@ fun DownloadScreen(
         Button(
             onClick = {
                 if (isValidPeriod) {
-                    onDownloadClick(
-                        startDate.value.format(dateFormatter),
-                        endDate.value.format(dateFormatter)
-                    )
+                    // Ambil data berdasarkan periode dari ViewModel
+                    onDownloadClick(startDate.value.toString(), endDate.value.toString())
                 } else {
-                    Toast.makeText(context, "Periode maksimal hanya 1 tahun!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Periode maksimal hanya 1 tahun!", Toast.LENGTH_LONG)
+                        .show()
                 }
             },
             enabled = isValidPeriod,
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(backgroundColor = if (isValidPeriod) Color(0xFFE91E63) else Color.Gray)
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = if (isValidPeriod) Color(
+                    0xFFE91E63
+                ) else Color.Gray
+            )
         ) {
             Text(text = "Download", color = Color.White)
         }
@@ -411,7 +420,9 @@ fun DownloadScreen(
             )
         }
     }
+    }
 }
+
 
 
 
@@ -439,124 +450,206 @@ fun DatePickerDialog(
     datePickerDialog.show()
 }
 
+//fun createPDF(context: Context, startDate: String, endDate: String, pemasukanDao: PemasukanDao, pengeluaranDao: PengeluaranDao) {
+//    // Header dan tabel PDF
+//    val pdfDocument = PdfDocument()
+//    val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // Ukuran A4 (595x842 px)
+//    val page = pdfDocument.startPage(pageInfo)
+//
+//    val canvas = page.canvas
+//    val paint = Paint()
+//
+//    // **Header**
+//    paint.textAlign = Paint.Align.CENTER
+//    paint.textSize = 20f
+//    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+//    canvas.drawText("Laporan Keuangan", pageInfo.pageWidth / 2f, 50f, paint)
+//
+//    // Logo (Opsional)
+//    val logo = BitmapFactory.decodeResource(context.resources, R.drawable.kucingg) // Ganti dengan logo aplikasi Anda
+//    val resizedLogo = Bitmap.createScaledBitmap(logo, 100, 100, false)
+//    canvas.drawBitmap(resizedLogo, 30f, 30f, paint)
+//
+//    // Periode transaksi
+//    paint.textAlign = Paint.Align.LEFT
+//    paint.textSize = 16f
+//    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+//    canvas.drawText("Periode: $startDate - $endDate", 30f, 150f, paint)
+//
+//    // **Total Transaksi**
+//    val totalPemasukan = pemasukanDao.getTotalPemasukan(startDate, endDate)
+//    val totalPengeluaran = pengeluaranDao.getTotalPengeluaran(startDate, endDate)
+//    val totalSaldo = totalPemasukan - totalPengeluaran
+//
+//    paint.textSize = 14f
+//    canvas.drawText("Total Pemasukan: Rp$totalPemasukan", 30f, 180f, paint)
+//    canvas.drawText("Total Pengeluaran: Rp$totalPengeluaran", 30f, 200f, paint)
+//    canvas.drawText("Saldo Akhir: Rp$totalSaldo", 30f, 220f, paint)
+//
+//    // **Tabel Pemasukan**
+//    paint.textSize = 14f
+//    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+//    canvas.drawText("Tabel Pemasukan", 30f, 260f, paint)
+//
+//    // Menggambar header tabel dengan border
+//    val startX = 30f
+//    var yPosition = 290f
+//    val rowHeight = 20f
+//    val columnWidths = listOf(70f, 100f, 150f, 150f, 100f)
+//
+//    // Header Tabel
+//    canvas.drawText("Tanggal", startX, yPosition, paint)
+//    canvas.drawText("Metode", startX + columnWidths[0], yPosition, paint)
+//    canvas.drawText("Sumber", startX + columnWidths[0] + columnWidths[1], yPosition, paint)
+//    canvas.drawText("Catatan", startX + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, paint)
+//    canvas.drawText("Nominal", startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yPosition, paint)
+//
+//    // Garis bawah header
+//    canvas.drawLine(startX, yPosition + 5f, startX + columnWidths.sum(), yPosition + 5f, paint)
+//
+//    // Ambil data pemasukan dari database
+//    val pemasukanData = pemasukanDao.getPemasukanBetweenDates(startDate, endDate)
+//    yPosition += rowHeight
+//    for (row in pemasukanData) {
+//        canvas.drawText(row.tanggal, startX, yPosition, paint)
+//        canvas.drawText(row.metode, startX + columnWidths[0], yPosition, paint)
+//        canvas.drawText(row.sumberPemasukan, startX + columnWidths[0] + columnWidths[1], yPosition, paint)
+//        canvas.drawText(row.catatan ?: "-", startX + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, paint)
+//        canvas.drawText("Rp${row.nominal}", startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yPosition, paint)
+//        yPosition += rowHeight
+//    }
+//
+//    // **Tabel Pengeluaran**
+//    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+//    canvas.drawText("Tabel Pengeluaran", 30f, yPosition + 30f, paint)
+//
+//    // Menggambar header tabel dengan border
+//    yPosition += 40f
+//    canvas.drawText("Tanggal", startX, yPosition, paint)
+//    canvas.drawText("Metode", startX + columnWidths[0], yPosition, paint)
+//    canvas.drawText("Tujuan", startX + columnWidths[0] + columnWidths[1], yPosition, paint)
+//    canvas.drawText("Catatan", startX + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, paint)
+//    canvas.drawText("Nominal", startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yPosition, paint)
+//
+//    // Garis bawah header pengeluaran
+//    canvas.drawLine(startX, yPosition + 5f, startX + columnWidths.sum(), yPosition + 5f, paint)
+//
+//    // Ambil data pengeluaran dari database
+//    val pengeluaranData = pengeluaranDao.getPengeluaranBetweenDates(startDate, endDate)
+//    yPosition += rowHeight
+//    for (row in pengeluaranData) {
+//        canvas.drawText(row.tanggal, startX, yPosition, paint)
+//        canvas.drawText(row.metode, startX + columnWidths[0], yPosition, paint)
+//        canvas.drawText(row.tujuanPengeluaran, startX + columnWidths[0] + columnWidths[1], yPosition, paint)
+//        canvas.drawText(row.catatan ?: "-", startX + columnWidths[0] + columnWidths[1] + columnWidths[2], yPosition, paint)
+//        canvas.drawText("Rp${row.nominal}", startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yPosition, paint)
+//        yPosition += rowHeight
+//    }
+//
+//    // Selesaikan halaman
+//    pdfDocument.finishPage(page)
+//
+//    // Tentukan direktori dan pastikan direktori ada
+//    val fileDir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "Laporan_Transaksi_${startDate}_to_${endDate}")
+//
+//    // Membuat direktori jika belum ada
+//    if (!fileDir.exists()) {
+//        val dirCreated = fileDir.mkdirs()
+//        if (!dirCreated) {
+//            Toast.makeText(context, "Gagal membuat direktori", Toast.LENGTH_LONG).show()
+//            return
+//        }
+//    }
+//
+//    // File PDF
+//    val pdfFile = File(fileDir, "Laporan_Transaksi_${startDate}_to_${endDate}.pdf")
+//
+//    try {
+//        // Menulis file PDF
+//        pdfDocument.writeTo(FileOutputStream(pdfFile))
+//        Toast.makeText(context, "PDF berhasil disimpan di ${pdfFile.absolutePath}", Toast.LENGTH_LONG).show()
+//    } catch (e: Exception) {
+//        e.printStackTrace()
+//        Toast.makeText(context, "Gagal menyimpan PDF", Toast.LENGTH_LONG).show()
+//    }
+//
+//    // Menutup dokumen PDF setelah selesai
+//    pdfDocument.close()
+//}
+
+//fun createPDF(
+//    context: Context,
+//    startDate: String,
+//    endDate: String,
+//    pemasukanList: List<Pemasukan>,
+//    pengeluaranList: List<Pengeluaran>
+//) {
+//    val document = PdfDocument()
+//    val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
+//    val page = document.startPage(pageInfo)
+//
+//    val canvas = page.canvas
+//    val paint = Paint()
+//    paint.textSize = 12f
+//    paint.color = Color.BLACK  // Gunakan Color.BLACK (Integer) di sini
+//
+//    // Judul Halaman
+//    canvas.drawText("Rekap Transaksi: $startDate - $endDate", 100f, 100f, paint)
+//
+//    // Tabel untuk Pemasukan
+//    var yOffset = 120f
+//    canvas.drawText("Pemasukan", 100f, yOffset, paint)
+//    yOffset += 20f
+//
+//    // Header Tabel Pemasukan
+//    canvas.drawText("Tanggal", 100f, yOffset, paint)
+//    canvas.drawText("Nominal", 300f, yOffset, paint)
+//    yOffset += 20f
+//
+//    // Tabel Pemasukan
+//    for (pemasukan in pemasukanList) {
+//        canvas.drawText(pemasukan.tanggal, 100f, yOffset, paint)
+//        canvas.drawText("Rp ${pemasukan.nominal}", 300f, yOffset, paint)
+//        yOffset += 20f
+//    }
+//
+//    // Tabel untuk Pengeluaran
+//    canvas.drawText("Pengeluaran", 100f, yOffset, paint)
+//    yOffset += 20f
+//
+//    // Header Tabel Pengeluaran
+//    canvas.drawText("Tanggal", 100f, yOffset, paint)
+//    canvas.drawText("Nominal", 300f, yOffset, paint)
+//    yOffset += 20f
+//
+//    // Tabel Pengeluaran
+//    for (pengeluaran in pengeluaranList) {
+//        canvas.drawText(pengeluaran.tanggal, 100f, yOffset, paint)
+//        canvas.drawText("Rp ${pengeluaran.nominal}", 300f, yOffset, paint)
+//        yOffset += 20f
+//    }
+//
+//    document.finishPage(page)
+//
+//    // Menyimpan file PDF
+//    val file = File(context.getExternalFilesDir(null), "Rekap_Transaksi_${startDate}_to_${endDate}.pdf")
+//    try {
+//        document.writeTo(FileOutputStream(file))
+//        Toast.makeText(context, "PDF berhasil dibuat: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+//    } catch (e: IOException) {
+//        e.printStackTrace()
+//        Toast.makeText(context, "Gagal membuat PDF", Toast.LENGTH_LONG).show()
+//    } finally {
+//        document.close()
+//    }
+//}
 
 
-fun createPDF(context: Context, startDate: String, endDate: String) {
-    // Header dan tabel PDF
-    val pdfDocument = PdfDocument()
-    val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // Ukuran A4 (595x842 px)
-    val page = pdfDocument.startPage(pageInfo)
 
-    val canvas = page.canvas
-    val paint = Paint()
 
-    // **Header**
-    paint.textAlign = Paint.Align.CENTER
-    paint.textSize = 20f
-    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-    canvas.drawText("Laporan Keuangan", pageInfo.pageWidth / 2f, 50f, paint)
 
-    // Logo (Opsional)
-    val logo = BitmapFactory.decodeResource(context.resources, R.drawable.kucingg) // Ganti dengan logo aplikasi Anda
-    val resizedLogo = Bitmap.createScaledBitmap(logo, 100, 100, false)
-    canvas.drawBitmap(resizedLogo, 30f, 30f, paint)
 
-    // Periode transaksi
-    paint.textAlign = Paint.Align.LEFT
-    paint.textSize = 16f
-    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-    canvas.drawText("Periode: $startDate - $endDate", 30f, 150f, paint)
 
-    // **Total Transaksi**
-    val totalPemasukan = 1000000.0 // Ganti dengan nilai dari database
-    val totalPengeluaran = 750000.0 // Ganti dengan nilai dari database
-    val totalSaldo = totalPemasukan - totalPengeluaran
-
-    paint.textSize = 14f
-    canvas.drawText("Total Pemasukan: Rp$totalPemasukan", 30f, 180f, paint)
-    canvas.drawText("Total Pengeluaran: Rp$totalPengeluaran", 30f, 200f, paint)
-    canvas.drawText("Saldo Akhir: Rp$totalSaldo", 30f, 220f, paint)
-
-    // **Tabel Pemasukan**
-    paint.textSize = 14f
-    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-    canvas.drawText("Tabel Pemasukan", 30f, 260f, paint)
-
-    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-    var yPosition = 290f
-    canvas.drawText("Tanggal", 30f, yPosition, paint)
-    canvas.drawText("Metode", 100f, yPosition, paint)
-    canvas.drawText("Sumber", 200f, yPosition, paint)
-    canvas.drawText("Catatan", 300f, yPosition, paint)
-    canvas.drawText("Nominal", 450f, yPosition, paint)
-
-    yPosition += 20f
-    val pemasukanData = listOf(
-        listOf("05/11/2024", "Transfer", "Gaji", "November", "Rp5.000.000"),
-        listOf("06/11/2024", "Tunai", "Bonus", "-", "Rp2.000.000")
-    ) // Ganti dengan data dari database
-    for (row in pemasukanData) {
-        canvas.drawText(row[0], 30f, yPosition, paint)
-        canvas.drawText(row[1], 100f, yPosition, paint)
-        canvas.drawText(row[2], 200f, yPosition, paint)
-        canvas.drawText(row[3], 300f, yPosition, paint)
-        canvas.drawText(row[4], 450f, yPosition, paint)
-        yPosition += 20f
-    }
-
-    // **Tabel Pengeluaran**
-    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-    canvas.drawText("Tabel Pengeluaran", 30f, yPosition + 30f, paint)
-
-    paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-    yPosition += 60f
-    canvas.drawText("Tanggal", 30f, yPosition, paint)
-    canvas.drawText("Metode", 100f, yPosition, paint)
-    canvas.drawText("Tujuan", 200f, yPosition, paint)
-    canvas.drawText("Catatan", 300f, yPosition, paint)
-    canvas.drawText("Nominal", 450f, yPosition, paint)
-
-    yPosition += 20f
-    val pengeluaranData = listOf(
-        listOf("07/11/2024", "Transfer", "Belanja", "-", "Rp1.500.000"),
-        listOf("08/11/2024", "Tunai", "Makan", "Dinner", "Rp500.000")
-    ) // Ganti dengan data dari database
-    for (row in pengeluaranData) {
-        canvas.drawText(row[0], 30f, yPosition, paint)
-        canvas.drawText(row[1], 100f, yPosition, paint)
-        canvas.drawText(row[2], 200f, yPosition, paint)
-        canvas.drawText(row[3], 300f, yPosition, paint)
-        canvas.drawText(row[4], 450f, yPosition, paint)
-        yPosition += 20f
-    }
-
-    // Selesaikan halaman
-    pdfDocument.finishPage(page)
-
-    // Tentukan direktori dan pastikan direktori ada
-    val fileDir = File(context.getExternalFilesDir(null), "Laporan_Transaksi_${startDate}_to_${endDate}")
-    if (!fileDir.exists()) {
-        val dirCreated = fileDir.mkdirs() // Membuat direktori jika belum ada
-        if (!dirCreated) {
-            Toast.makeText(context, "Gagal membuat direktori", Toast.LENGTH_LONG).show()
-            return
-        }
-    }
-
-    val pdfFile = File(fileDir, "Laporan_Transaksi_${startDate}_to_${endDate}.pdf")
-
-    try {
-        // Menulis file PDF
-        pdfDocument.writeTo(FileOutputStream(pdfFile))
-        Toast.makeText(context, "PDF berhasil disimpan di ${pdfFile.absolutePath}", Toast.LENGTH_LONG).show()
-    } catch (e: Exception) {
-        e.printStackTrace()
-        Toast.makeText(context, "Gagal menyimpan PDF", Toast.LENGTH_LONG).show()
-    }
-
-    // Menutup dokumen PDF setelah selesai
-    pdfDocument.close()
-}
 
 
 

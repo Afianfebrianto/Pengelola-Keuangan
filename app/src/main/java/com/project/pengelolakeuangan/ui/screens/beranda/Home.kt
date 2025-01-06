@@ -43,6 +43,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) {
     // Mengamati transaksi yang ada di ViewModel
+
     val transactions by viewModel.transactions.observeAsState(emptyList())
 
     // Pastikan data transaksi sudah ada

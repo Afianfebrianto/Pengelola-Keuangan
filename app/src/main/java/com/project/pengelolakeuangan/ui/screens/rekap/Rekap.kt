@@ -42,6 +42,11 @@ import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+
+//
+
+
+
 @Composable
 fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel) {
     // State untuk tanggal saat ini (default: bulan dan tahun sekarang)
@@ -57,6 +62,7 @@ fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel)
             month = currentDate.value.monthValue
         )
     }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Header untuk memilih bulan dan menambahkan tombol

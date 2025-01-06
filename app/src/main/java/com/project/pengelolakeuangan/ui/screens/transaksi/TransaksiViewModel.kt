@@ -168,6 +168,51 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         return filteredTransactions
     }
 
+    // Menyaring Pemasukan berdasarkan rentang waktu
+    fun getPemasukanByPeriod(startDate: String, endDate: String): LiveData<List<Pemasukan>> {
+        val filteredPemasukan = MutableLiveData<List<Pemasukan>>()
+        viewModelScope.launch {
+            val pemasukanList = transactionDao.getAllPemasukan().filter {
+                val transaksiDate = LocalDate.parse(it.tanggal)
+                transaksiDate.isAfter(LocalDate.parse(startDate).minusDays(1)) && transaksiDate.isBefore(LocalDate.parse(endDate).plusDays(1))
+            }
+            filteredPemasukan.postValue(pemasukanList)
+        }
+        return filteredPemasukan
+    }
+
+    // Menyaring Pengeluaran berdasarkan rentang waktu
+    fun getPengeluaranByPeriod(startDate: String, endDate: String): LiveData<List<Pengeluaran>> {
+        val filteredPengeluaran = MutableLiveData<List<Pengeluaran>>()
+        viewModelScope.launch {
+            val pengeluaranList = transactionDao.getAllPengeluaran().filter {
+                val transaksiDate = LocalDate.parse(it.tanggal)
+                transaksiDate.isAfter(LocalDate.parse(startDate).minusDays(1)) && transaksiDate.isBefore(LocalDate.parse(endDate).plusDays(1))
+            }
+            filteredPengeluaran.postValue(pengeluaranList)
+        }
+        return filteredPengeluaran
+    }
+
+    // Mengambil semua pemasukan
+    fun getAllPemasukan(): LiveData<List<Pemasukan>> {
+        val result = MutableLiveData<List<Pemasukan>>()
+        viewModelScope.launch {
+            result.postValue(transactionDao.getAllPemasukan())
+        }
+        return result
+    }
+
+    // Mengambil semua pengeluaran
+    fun getAllPengeluaran(): LiveData<List<Pengeluaran>> {
+        val result = MutableLiveData<List<Pengeluaran>>()
+        viewModelScope.launch {
+            result.postValue(transactionDao.getAllPengeluaran())
+        }
+        return result
+    }
+
+
 }
 
 
