@@ -1,6 +1,5 @@
 package com.project.pengelolakeuangan.ui.screens.beranda
 
-import android.icu.util.Calendar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,18 +29,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.ui.navigation.Screen
+import com.project.pengelolakeuangan.ui.screens.DatePickerDialog
 import com.project.pengelolakeuangan.ui.screens.FinancialSummary
 import com.project.pengelolakeuangan.ui.screens.formatToRupiah
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) {
@@ -60,10 +57,15 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
     // State untuk menampilkan DatePicker
     val showDatePicker = remember { mutableStateOf(false) }
 
-    // Data Dummy untuk pemasukan, pengeluaran, dan saldo
+    // Data untuk pemasukan, pengeluaran, dan saldo
     val totalIncome = transactions.filter { it.isIncome }.sumOf { it.nominal }
     val totalExpense = transactions.filter { !it.isIncome }.sumOf { it.nominal }
     val balance = totalIncome - totalExpense
+
+    // Filter transaksi sesuai tanggal yang dipilih
+    val filteredTransactions = transactions.filter { transaction ->
+        transaction.date == selectedDate.value
+    }
 
     // Tampilkan DatePickerDialog jika diperlukan
     if (showDatePicker.value) {
@@ -129,7 +131,7 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
 
         // Daftar Transaksi Terbaru
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(transactions) { transaction ->
+            items(filteredTransactions) { transaction ->
                 TransactionItem(transaction = transaction)
             }
         }
@@ -172,28 +174,6 @@ fun TransactionItem(transaction: TransactionData) {
 
 
 
-@Composable
-fun DatePickerDialog(
-    selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    val calendar = Calendar.getInstance()
-    calendar.time = Date.from(selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
 
-    val datePickerDialog = android.app.DatePickerDialog(
-        LocalContext.current,
-        { _, year, month, dayOfMonth ->
-            val newDate = LocalDate.of(year, month + 1, dayOfMonth)
-            onDateSelected(newDate)
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )
-
-    datePickerDialog.setOnDismissListener { onDismissRequest() }
-    datePickerDialog.show()
-}
 
 

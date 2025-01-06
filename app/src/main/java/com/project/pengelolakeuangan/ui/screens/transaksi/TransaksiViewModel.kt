@@ -161,6 +161,13 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun getTransactionsByMonth(year: Int, month: Int): List<TransactionData> {
+        val filteredTransactions = transactions.value?.filter { transaction ->
+            transaction.date.year == year && transaction.date.monthValue == month
+        } ?: emptyList()
+        return filteredTransactions
+    }
+
 }
 
 

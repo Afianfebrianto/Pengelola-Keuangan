@@ -63,11 +63,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation (libs.androidx.material)
 
-//viewmodel
+    //viewmodel
     implementation (libs.androidx.lifecycle.viewmodel.compose)
+
     //database
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
 
+    //pdfmaker
+    implementation ("com.itextpdf:itext7-core:7.2.3")
 }

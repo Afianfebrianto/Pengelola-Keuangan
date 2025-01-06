@@ -3,25 +3,27 @@ package com.project.pengelolakeuangan.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
+import com.project.pengelolakeuangan.ui.screens.DownloadScreen
 import com.project.pengelolakeuangan.ui.screens.SearchScreen
 import com.project.pengelolakeuangan.ui.screens.beranda.HomeScreen
+import com.project.pengelolakeuangan.ui.screens.createPDF
 import com.project.pengelolakeuangan.ui.screens.profile.ProfileScreen
 import com.project.pengelolakeuangan.ui.screens.profile.SettingsScreen
 import com.project.pengelolakeuangan.ui.screens.rekap.RekapScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionFormScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionsScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
+import kotlinx.coroutines.launch
 import java.time.LocalTime
-import java.util.Calendar
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
@@ -58,37 +60,29 @@ fun AppNavGraph(
         composable("settings") {
             SettingsScreen(viewModel = viewModel)
         }
-        composable(Screen.Rekap.route) {
-            // Mendapatkan instance ViewModel
-            val pemasukan by viewModel.getTotalPemasukan().observeAsState(0.0) // Nilai default 0.0
-            val pengeluaran by viewModel.getTotalPengeluaran()
-                .observeAsState(0.0) // Nilai default 0.0
 
-            // Simpan bulan dan tahun yang dipilih
-            val selectedMonth =
-                remember { mutableStateOf(Calendar.getInstance().get(Calendar.MONTH)) }
-            val selectedYear =
-                remember { mutableStateOf(Calendar.getInstance().get(Calendar.YEAR)) }
+        composable("download") {
+            val context = LocalContext.current
 
+            // Handling the onDownloadClick with coroutine scope
+            val coroutineScope = rememberCoroutineScope()
 
-
-            // RekapScreen dengan pengambilan pemasukan dan pengeluaran serta pengaturan bulan dan tahun
-            RekapScreen(
-                pemasukan = pemasukan,
-                pengeluaran = pengeluaran,
-                onMonthYearSelected = { month, year ->
-                    // Set bulan dan tahun yang dipilih
-                    selectedMonth.value = month
-                    selectedYear.value = year
-
-                    // Panggil ViewModel untuk memuat transaksi berdasarkan bulan dan tahun yang dipilih
-                    viewModel.loadTransactionsForMonth(month, year)
-                },
-                selectedMonth = selectedMonth.value,
-                selectedYear = selectedYear.value,
-                navController
-
+            DownloadScreen(
+                navController = navController,
+                onDownloadClick = { startDate, endDate ->
+                    coroutineScope.launch {
+                        createPDF(
+                            context = context,
+                            startDate = startDate,
+                            endDate = endDate
+                        )
+                    }
+                }
             )
+        }
+
+        composable(Screen.Rekap.route) {
+            RekapScreen(navController = navController, viewModel = viewModel)
         }
         composable(Screen.Account.route) {
             ProfileScreen(navController = navController, viewModel = viewModel)
