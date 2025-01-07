@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,6 +24,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.project.pengelolakeuangan.R
+import com.project.pengelolakeuangan.ui.screens.WelcomeButton
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,9 +53,17 @@ fun WelcomeScreen1(onNextClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Button(onClick = onNextClick) {
-            Text("Yuk, Mulai Sekarang!")
-        }
+        WelcomeButton(
+            text = "Yuk, Mulai Sekarang!",
+            onClick = onNextClick,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+//        Button(onClick = onNextClick) {
+//            Text("Yuk, Mulai Sekarang!")
+//        }
     }
 }
 
@@ -92,9 +100,17 @@ fun WelcomeScreen2(onFinishClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Button(onClick = onFinishClick) {
-            Text("Mulai")
-        }
+        WelcomeButton(
+            text = "Mulai",
+            onClick = onFinishClick,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+//
+//        Button(onClick = onFinishClick) {
+//            Text("Mulai")
+//        }
     }
 }
 

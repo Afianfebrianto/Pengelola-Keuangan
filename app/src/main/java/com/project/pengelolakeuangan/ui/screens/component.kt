@@ -44,13 +44,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.ui.screens.beranda.TransactionItem
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
@@ -59,12 +64,18 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
+
+
+
+
+
+
 @Composable
 fun DonutChart(pemasukan: Double, pengeluaran: Double) {
     val total = pemasukan
     val pengeluaranPercentage = if (total > 0) (pengeluaran / total).toFloat() else 0f
-    val pemasukanPercentage = 1f - pengeluaranPercentage // Sisanya adalah pemasukan
-//    val pemasukanPercentage = if (pengeluaran >0)( 1f - pengeluaranPercentage) else 0f // Sisanya adalah pemasukan
+//    val pemasukanPercentage = 1f - pengeluaranPercentage // Sisanya adalah pemasukan
+    val pemasukanPercentage = if (total >0)( 1f - pengeluaranPercentage) else 0f // Sisanya adalah pemasukan
 
     Box(
         modifier = Modifier

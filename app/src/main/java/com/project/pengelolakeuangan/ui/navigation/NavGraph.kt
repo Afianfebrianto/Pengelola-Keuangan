@@ -27,10 +27,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalTime
 
 sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object Transaction : Screen("transaction")
+    object Home : Screen("beranda")
+    object Transaction : Screen("transaksi")
     object Rekap : Screen("rekap")
-    object Account : Screen("profile")
+    object Account : Screen("profil")
     object Form : Screen("form/{isIncome}") {
         fun createRoute(isIncome: Boolean) = "form/$isIncome"
     }

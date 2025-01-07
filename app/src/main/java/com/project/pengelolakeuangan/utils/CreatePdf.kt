@@ -3,6 +3,7 @@ import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
@@ -61,8 +62,10 @@ fun createPDF(
     }
 
     // Header
-    val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.kucingg)
-    canvas.drawBitmap(logoBitmap, 50f, 50f, paint)
+    val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.kucingjpg)
+    val resizedBitmap = Bitmap.createScaledBitmap(logoBitmap, 100, 100, false)
+    canvas.drawBitmap(resizedBitmap, 50f, 50f, paint)
+//    canvas.drawBitmap(logoBitmap, 50f, 50f, paint)
 
     canvas.drawText("Laporan Keuangan", 150f, 70f, titlePaint)
     canvas.drawText("Periode: $startDate - $endDate", 150f, 90f, paint)

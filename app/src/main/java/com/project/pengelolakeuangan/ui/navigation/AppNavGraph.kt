@@ -1,7 +1,11 @@
 package com.project.pengelolakeuangan.ui.navigation
 
 import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -9,9 +13,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.project.pengelolakeuangan.R
@@ -60,20 +67,44 @@ fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit)
         Screen.Account to R.drawable.account_circle
     )
 
-    BottomNavigation(backgroundColor = Color.White) {
+    BottomNavigation(
+        backgroundColor = Color.Transparent, // Menghilangkan latar belakang BottomNavigation
+        elevation = 0.dp // Menghilangkan shadow
+    ) {
         items.forEach { (screen, iconRes) ->
             BottomNavigationItem(
                 selected = currentRoute == screen.route,
                 onClick = { onItemSelected(screen.route) },
                 icon = {
-                    Icon(
-                        painter = painterResource(id = iconRes),
-                        contentDescription = screen.route
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp) // Ukuran lingkaran diperbesar
+                            .clip(CircleShape) // Membuat lingkaran
+                            .background(Color(0xFFF58B76)) // Warna #F58B76
+                            .padding(10.dp) // Padding lebih besar agar ikon sedikit lebih besar
+                    ) {
+                        Icon(
+                            painter = painterResource(id = iconRes),
+                            contentDescription = screen.route,
+                            modifier = Modifier.align(Alignment.Center) // Menyusun icon di tengah
+                        )
+                    }
                 },
-                label = { Text(text = screen.route.capitalize()) }
+                label = {
+                    Box(
+                        modifier = Modifier.background(Color.Transparent) // Menjadikan background label transparan
+                    ) {
+                        Text(
+                            text = screen.route.capitalize(),
+                            color = Color.Black // Menentukan warna teks
+                        )
+                    }
+                }
             )
         }
     }
 }
+
+
+
 
