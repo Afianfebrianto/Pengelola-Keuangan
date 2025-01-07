@@ -62,5 +62,13 @@ interface TransactionDao {
    @Query("SELECT * FROM pengeluaran WHERE tujuanPengeluaran LIKE '%' || :query || '%' OR catatan LIKE '%' || :query || '%'")
   fun searchPengeluaran(query: String): Flow<List<Pengeluaran>>
 
+    @Query("SELECT * FROM Pemasukan WHERE tanggal BETWEEN :startDate AND :endDate")
+    fun getPemasukanByDate(startDate: String, endDate: String): List<Pemasukan>
+
+    @Query("SELECT * FROM Pengeluaran WHERE tanggal BETWEEN :startDate AND :endDate")
+    fun getPengeluaranByDate(startDate: String, endDate: String): List<Pengeluaran>
+
+
+
 
 }

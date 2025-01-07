@@ -1,46 +1,29 @@
 
+import android.app.ProgressDialog
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.widget.Toast
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.NumberFormat
 import java.util.Locale
 
-//fun createPDFWithLoading(
-//    context: Context,
-//    startDate: String,
-//    endDate: String,
-//    pemasukanList: List<Pemasukan>,
-//    pengeluaranList: List<Pengeluaran>,
-//    progressBarVisible: Boolean // Flag for controlling progress bar visibility
-//) {
-//    // Create PDF document in background thread
-//    AsyncTask.execute {
-//        createPDF(
-//            context,
-//            startDate,
-//            endDate,
-//            pemasukanList,
-//            pengeluaranList
-//        )
-//
-//        // Hide ProgressBar and show a message when the process is done
-//        (context as Activity).runOnUiThread {
-//            // Hide the ProgressBar and show a Toast after PDF is created
-//            progressBarVisible = false
-//            Toast.makeText(context, "PDF berhasil dibuat", Toast.LENGTH_LONG).show()
-//        }
-//    }
-//}
+//coba
 
 
 fun createPDF(
@@ -50,112 +33,280 @@ fun createPDF(
     pemasukanList: List<Pemasukan>,
     pengeluaranList: List<Pengeluaran>
 ) {
+    // Menampilkan dialog loading
+    val progressDialog = ProgressDialog(context).apply {
+        setMessage("Membuat PDF...")
+        setCancelable(false)
+        show()
+    }
+
     val document = PdfDocument()
 
-    // Ukuran halaman A4 dengan margin lebih besar untuk memberi ruang
-    val pageWidth = 650f  // Lebar kertas
-    val pageHeight = 900f  // Tinggi kertas
+    // Ukuran halaman A4
+    val pageWidth = 595f // A4 width in points
+    val pageHeight = 842f // A4 height in points
     val pageInfo = PdfDocument.PageInfo.Builder(pageWidth.toInt(), pageHeight.toInt(), 1).create()
     val page = document.startPage(pageInfo)
 
     val canvas = page.canvas
-    val paint = Paint()
-    paint.textSize = 12f
-    paint.color = Color.BLACK
+    val paint = Paint().apply {
+        textSize = 12f
+        color = Color.BLACK
+    }
+
+    val titlePaint = Paint().apply {
+        textSize = 16f
+        color = Color.BLACK
+        isFakeBoldText = true
+    }
 
     // Header
-    val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.kucingg) // Ganti dengan ID logo aplikasi
-    canvas.drawBitmap(logoBitmap, 50f, 50f, paint) // Logo aplikasi pada posisi (50, 50)
-    canvas.drawText("Laporan Keuangan", 200f, 50f, paint)
-    canvas.drawText("Periode: $startDate - $endDate", 200f, 70f, paint)
+    val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.kucingg)
+    canvas.drawBitmap(logoBitmap, 50f, 50f, paint)
+
+    canvas.drawText("Laporan Keuangan", 150f, 70f, titlePaint)
+    canvas.drawText("Periode: $startDate - $endDate", 150f, 90f, paint)
 
     // Total Pemasukan dan Pengeluaran
     val totalPemasukan = pemasukanList.sumOf { it.nominal }
     val totalPengeluaran = pengeluaranList.sumOf { it.nominal }
-    canvas.drawText("Total Pemasukan: Rp ${totalPemasukan.formatCurrency()}", 200f, 90f, paint)
-    canvas.drawText("Total Pengeluaran: Rp ${totalPengeluaran.formatCurrency()}", 200f, 110f, paint)
+    canvas.drawText("Total Pemasukan: Rp ${totalPemasukan.formatCurrency()}", 150f, 110f, paint)
+    canvas.drawText("Total Pengeluaran: Rp ${totalPengeluaran.formatCurrency()}", 150f, 130f, paint)
 
-    var yOffset = 140f
+    // Posisi awal untuk tabel
+    var yOffset = 160f
 
     // Tabel Pengeluaran
-    canvas.drawText("Pengeluaran:", 100f, yOffset, paint)
-    yOffset += 20f
-    // Header tabel Pengeluaran
-    canvas.drawText("Tanggal", 100f, yOffset, paint)
-    canvas.drawText("Metode", 200f, yOffset, paint)
-    canvas.drawText("Tujuan Pengeluaran", 300f, yOffset, paint)
-    canvas.drawText("Catatan", 450f, yOffset, paint)
-    canvas.drawText("Nominal", 550f, yOffset, paint)
-    yOffset += 20f
-
-    // Menampilkan setiap data pengeluaran
-    if (pengeluaranList.isNotEmpty()) {
-        for (pengeluaran in pengeluaranList) {
-            // Menggambar setiap baris tanpa border
-            drawTableRow(canvas, pengeluaran.tanggal, pengeluaran.metode, pengeluaran.tujuanPengeluaran, pengeluaran.catatan ?: "-", pengeluaran.nominal.formatCurrency(), yOffset)
-            yOffset += 20f
-        }
-    } else {
-        canvas.drawText("Tidak ada pengeluaran", 100f, yOffset, paint)
-        yOffset += 20f
-    }
+    yOffset = drawTableSection(
+        canvas,
+        title = "Pengeluaran",
+        headers = listOf("Tanggal", "Metode", "Tujuan", "Catatan", "Nominal"),
+        data = pengeluaranList.map { listOf(it.tanggal, it.metode, it.tujuanPengeluaran, it.catatan ?: "-", it.nominal.formatCurrency()) },
+        yOffset = yOffset,
+        pageWidth = pageWidth,
+        paint = paint
+    )
 
     // Pemisah antar tabel
     yOffset += 20f
 
     // Tabel Pemasukan
-    canvas.drawText("Pemasukan:", 100f, yOffset, paint)
-    yOffset += 20f
-    // Header tabel Pemasukan
-    canvas.drawText("Tanggal", 100f, yOffset, paint)
-    canvas.drawText("Metode", 200f, yOffset, paint)
-    canvas.drawText("Sumber Pemasukan", 300f, yOffset, paint)
-    canvas.drawText("Catatan", 450f, yOffset, paint)
-    canvas.drawText("Nominal", 550f, yOffset, paint)
-    yOffset += 20f
-
-    // Menampilkan setiap data pemasukan
-    if (pemasukanList.isNotEmpty()) {
-        for (pemasukan in pemasukanList) {
-            // Menggambar setiap baris tanpa border
-            drawTableRow(canvas, pemasukan.tanggal, pemasukan.metode, pemasukan.sumberPemasukan, pemasukan.catatan ?: "-", pemasukan.nominal.formatCurrency(), yOffset)
-            yOffset += 20f
-        }
-    } else {
-        canvas.drawText("Tidak ada pemasukan", 100f, yOffset, paint)
-        yOffset += 20f
-    }
+    yOffset = drawTableSection(
+        canvas,
+        title = "Pemasukan",
+        headers = listOf("Tanggal", "Metode", "Sumber", "Catatan", "Nominal"),
+        data = pemasukanList.map { listOf(it.tanggal, it.metode, it.sumberPemasukan, it.catatan ?: "-", it.nominal.formatCurrency()) },
+        yOffset = yOffset,
+        pageWidth = pageWidth,
+        paint = paint
+    )
 
     // Menyelesaikan halaman dan dokumen
     document.finishPage(page)
 
-    // Menyimpan PDF ke file
-    val file = File(context.getExternalFilesDir(null), "Rekap_Transaksi_${startDate}_to_${endDate}.pdf")
+    // Konversi PDF menjadi ByteArray
+    val byteArrayOutputStream = ByteArrayOutputStream()
     try {
-        document.writeTo(FileOutputStream(file))
-        Toast.makeText(context, "PDF berhasil dibuat: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+        document.writeTo(byteArrayOutputStream)
+        val pdfData = byteArrayOutputStream.toByteArray()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10 ke atas menggunakan MediaStore untuk menyimpan di folder Downloads
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, "Rekap_Transaksi_${startDate}_to_${endDate}.pdf")
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/") // Folder Downloads
+            }
+
+            val contentResolver = context.contentResolver
+            val uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+
+            uri?.let {
+                contentResolver.openOutputStream(it)?.use { outputStream ->
+                    outputStream.write(pdfData)
+                    outputStream.flush()
+                }
+                Toast.makeText(context, "PDF berhasil disimpan di Downloads", Toast.LENGTH_LONG).show()
+                openPDF(context, uri) // Membuka file PDF setelah disimpan
+            }
+        } else {
+            // Untuk API Level lebih rendah (di bawah Android 10)
+            val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "Rekap_Transaksi_${startDate}_to_${endDate}.pdf")
+            try {
+                FileOutputStream(file).use { outputStream ->
+                    outputStream.write(pdfData)
+                    outputStream.flush()
+                }
+                Toast.makeText(context, "PDF berhasil disimpan di Downloads", Toast.LENGTH_LONG).show()
+                openPDF(context, Uri.fromFile(file)) // Membuka file PDF setelah disimpan
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(context, "Gagal menyimpan PDF", Toast.LENGTH_LONG).show()
+            }
+        }
     } catch (e: IOException) {
         e.printStackTrace()
         Toast.makeText(context, "Gagal membuat PDF", Toast.LENGTH_LONG).show()
     } finally {
         document.close()
+        progressDialog.dismiss() // Menutup dialog loading
     }
 }
 
-// Fungsi untuk menggambar setiap baris dalam tabel tanpa border
-fun drawTableRow(canvas: Canvas, tanggal: String, metode: String, tujuan: String, catatan: String, nominal: String, yOffset: Float) {
-    val paint = Paint()
+// Fungsi untuk membuka PDF setelah disimpan
+fun openPDF(context: Context, fileUri: Uri) {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(fileUri, "application/pdf")
+        flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+    }
+    context.startActivity(intent)
+}
+
+
+
+//fun createPDF(
+//    context: Context,
+//    startDate: String,
+//    endDate: String,
+//    pemasukanList: List<Pemasukan>,
+//    pengeluaranList: List<Pengeluaran>
+//) {
+//    val document = PdfDocument()
+//
+//    // Ukuran halaman A4
+//    val pageWidth = 595f // A4 width in points
+//    val pageHeight = 842f // A4 height in points
+//    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth.toInt(), pageHeight.toInt(), 1).create()
+//    val page = document.startPage(pageInfo)
+//
+//    val canvas = page.canvas
+//    val paint = Paint().apply {
+//        textSize = 12f
+//        color = Color.BLACK
+//    }
+//
+//    val titlePaint = Paint().apply {
+//        textSize = 16f
+//        color = Color.BLACK
+//        isFakeBoldText = true
+//    }
+//
+//    // Header
+//    val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.kucingg)
+//    canvas.drawBitmap(logoBitmap, 50f, 50f, paint)
+//
+//    canvas.drawText("Laporan Keuangan", 150f, 70f, titlePaint)
+//    canvas.drawText("Periode: $startDate - $endDate", 150f, 90f, paint)
+//
+//    // Total Pemasukan dan Pengeluaran
+//    val totalPemasukan = pemasukanList.sumOf { it.nominal }
+//    val totalPengeluaran = pengeluaranList.sumOf { it.nominal }
+//    canvas.drawText("Total Pemasukan: Rp ${totalPemasukan.formatCurrency()}", 150f, 110f, paint)
+//    canvas.drawText("Total Pengeluaran: Rp ${totalPengeluaran.formatCurrency()}", 150f, 130f, paint)
+//
+//    // Posisi awal untuk tabel
+//    var yOffset = 160f
+//
+//    // Tabel Pengeluaran
+//    yOffset = drawTableSection(
+//        canvas,
+//        title = "Pengeluaran",
+//        headers = listOf("Tanggal", "Metode", "Tujuan", "Catatan", "Nominal"),
+//        data = pengeluaranList.map { listOf(it.tanggal, it.metode, it.tujuanPengeluaran, it.catatan ?: "-", it.nominal.formatCurrency()) },
+//        yOffset = yOffset,
+//        pageWidth = pageWidth,
+//        paint = paint
+//    )
+//
+//    // Pemisah antar tabel
+//    yOffset += 20f
+//
+//    // Tabel Pemasukan
+//    yOffset = drawTableSection(
+//        canvas,
+//        title = "Pemasukan",
+//        headers = listOf("Tanggal", "Metode", "Sumber", "Catatan", "Nominal"),
+//        data = pemasukanList.map { listOf(it.tanggal, it.metode, it.sumberPemasukan, it.catatan ?: "-", it.nominal.formatCurrency()) },
+//        yOffset = yOffset,
+//        pageWidth = pageWidth,
+//        paint = paint
+//    )
+//
+//    // Menyelesaikan halaman dan dokumen
+//    document.finishPage(page)
+//
+//    // Menyimpan PDF ke file
+//    val file = File(context.getExternalFilesDir(null), "Rekap_Transaksi_${startDate}_to_${endDate}.pdf")
+//    try {
+//        document.writeTo(FileOutputStream(file))
+//        Toast.makeText(context, "PDF berhasil dibuat: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+//    } catch (e: IOException) {
+//        e.printStackTrace()
+//        Toast.makeText(context, "Gagal membuat PDF", Toast.LENGTH_LONG).show()
+//    } finally {
+//        document.close()
+//    }
+//}
+
+// Fungsi untuk menggambar tabel dengan judul dan data
+fun drawTableSection(
+    canvas: Canvas,
+    title: String,
+    headers: List<String>,
+    data: List<List<String>>,
+    yOffset: Float,
+    pageWidth: Float,
+    paint: Paint
+): Float {
+    var currentYOffset = yOffset
     paint.textSize = 12f
-    paint.color = Color.BLACK
 
-    // Menyesuaikan posisi teks agar lebih rapi, dengan kolom nominal di tengah
-    canvas.drawText(tanggal, 100f, yOffset, paint)
-    canvas.drawText(metode, 200f, yOffset, paint)
-    canvas.drawText(tujuan, 300f, yOffset, paint)
-    canvas.drawText(catatan, 450f, yOffset, paint)
+    // Judul Tabel
+    canvas.drawText(title, 50f, currentYOffset, paint)
+    currentYOffset += 20f
 
-    // Agar nominal berada di posisi yang tepat dan tidak terpotong
-    canvas.drawText(nominal, 550f, yOffset, paint)
+    // Header Tabel
+    val columnWidths = calculateColumnWidths(headers, pageWidth)
+    drawTableRow(canvas, headers, columnWidths, currentYOffset, paint, isHeader = true)
+    currentYOffset += 20f
+
+    // Isi Tabel
+    if (data.isNotEmpty()) {
+        data.forEach { row ->
+            drawTableRow(canvas, row, columnWidths, currentYOffset, paint, isHeader = false)
+            currentYOffset += 20f
+        }
+    } else {
+        canvas.drawText("Tidak ada data", 50f, currentYOffset, paint)
+        currentYOffset += 20f
+    }
+
+    return currentYOffset
+}
+
+// Fungsi untuk menggambar baris tabel
+fun drawTableRow(
+    canvas: Canvas,
+    row: List<String>,
+    columnWidths: List<Float>,
+    yOffset: Float,
+    paint: Paint,
+    isHeader: Boolean
+) {
+    val boldPaint = Paint(paint).apply { isFakeBoldText = true }
+    var xOffset = 50f
+
+    row.forEachIndexed { index, cell ->
+        canvas.drawText(cell, xOffset, yOffset, if (isHeader) boldPaint else paint)
+        xOffset += columnWidths[index]
+    }
+}
+
+// Fungsi untuk menghitung lebar kolom secara proporsional
+fun calculateColumnWidths(headers: List<String>, pageWidth: Float): List<Float> {
+    val totalWeight = headers.size
+    val availableWidth = pageWidth - 100f // Margin kiri dan kanan
+    return List(headers.size) { availableWidth / totalWeight }
 }
 
 // Fungsi untuk memformat nilai nominal menjadi format mata uang
@@ -163,3 +314,4 @@ fun Double.formatCurrency(): String {
     val numberFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
     return numberFormat.format(this)
 }
+

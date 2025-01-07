@@ -62,6 +62,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation (libs.androidx.material)
+    implementation ("com.google.accompanist:accompanist-pager:0.24.13-rc")
 
     //viewmodel
     implementation (libs.androidx.lifecycle.viewmodel.compose)

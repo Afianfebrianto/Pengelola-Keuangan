@@ -1,5 +1,6 @@
 package com.project.pengelolakeuangan.ui.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,6 +35,7 @@ sealed class Screen(val route: String) {
         fun createRoute(isIncome: Boolean) = "form/$isIncome"
     }
     object Search : Screen("search")
+    object Welcome : Screen("welcome")
 }
 
 @Composable
@@ -42,16 +44,17 @@ fun AppNavGraph(
     viewModel: TransaksiViewModel,
     modifier: Modifier = Modifier
 ) {
+    // Mendapatkan context hanya di dalam Composable
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route,
-        modifier = Modifier
+        startDestination = Screen.Home.route // Jika pertama kali, navigasi ke Welcome
     ) {
         composable(Screen.Home.route) {
-            // Pastikan viewModel diteruskan ke HomeScreen
             HomeScreen(navController = navController, viewModel = viewModel)
         }
+
         composable(Screen.Transaction.route) {
             TransactionsScreen({ isIncome ->
                 navController.navigate(Screen.Form.createRoute(isIncome))
@@ -63,54 +66,53 @@ fun AppNavGraph(
         }
 
         composable("download") {
-            val context = LocalContext.current
-
-            // Handling the onDownloadClick with coroutine scope
             val coroutineScope = rememberCoroutineScope()
 
-            // Ambil data transaksi
-            val viewModel: TransaksiViewModel = viewModel()
-            val pemasukanList by viewModel.getAllPemasukan().observeAsState(emptyList())
-            val pengeluaranList by viewModel.getAllPengeluaran().observeAsState(emptyList())
-
-            // Pastikan data sudah di-load sebelum melakukan download
             DownloadScreen(
                 navController = navController,
                 onDownloadClick = { startDate, endDate ->
                     coroutineScope.launch {
-                        // Panggil createPDF dengan data pemasukan dan pengeluaran yang benar
-                        createPDF(
-                            context = context,
-                            startDate = startDate,
-                            endDate = endDate,
-                            pemasukanList = pemasukanList,  // List<Pemasukan>
-                            pengeluaranList = pengeluaranList // List<Pengeluaran>
-                        )
+                        try {
+                            val (filteredPemasukan, filteredPengeluaran) = viewModel.getDataForPeriod(startDate, endDate)
+
+                            if (filteredPemasukan.isEmpty() && filteredPengeluaran.isEmpty()) {
+                                Toast.makeText(context, "Tidak ada data untuk periode ini.", Toast.LENGTH_LONG).show()
+                                return@launch
+                            }
+
+                            createPDF(
+                                context = context,
+                                startDate = startDate,
+                                endDate = endDate,
+                                pemasukanList = filteredPemasukan,
+                                pengeluaranList = filteredPengeluaran
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Toast.makeText(context, "Gagal mengambil data: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             )
         }
 
-
         composable(Screen.Rekap.route) {
             RekapScreen(navController = navController, viewModel = viewModel)
         }
+
         composable(Screen.Account.route) {
             ProfileScreen(navController = navController, viewModel = viewModel)
         }
+
         composable(Screen.Form.route) { backStackEntry ->
             val isIncome = backStackEntry.arguments?.getString("isIncome")?.toBoolean() ?: true
 
-            // Mendapatkan instance ViewModel
             val viewModel: TransaksiViewModel = viewModel()
 
-            // Menyediakan fungsi penyimpanan ke database
             TransactionFormScreen(
                 isIncome = isIncome,
                 onSave = { transaction ->
-                    // Menyimpan transaksi ke database, berdasarkan jenis transaksi (Pemasukan atau Pengeluaran)
                     if (isIncome) {
-                        // Convert TransactionData to Pemasukan
                         val pemasukan = Pemasukan(
                             tanggal = transaction.date.toString(),
                             waktu = LocalTime.now().toString(),
@@ -121,7 +123,6 @@ fun AppNavGraph(
                         )
                         viewModel.savePemasukan(pemasukan)
                     } else {
-                        // Convert TransactionData to Pengeluaran
                         val pengeluaran = Pengeluaran(
                             tanggal = transaction.date.toString(),
                             waktu = LocalTime.now().toString(),
@@ -136,16 +137,13 @@ fun AppNavGraph(
                 onCancel = {
                     navController.popBackStack() // Kembali ke layar sebelumnya
                 },
-                viewModel = viewModel // Pass the viewModel to the form screen
+                viewModel = viewModel
             )
         }
 
-        // Menambahkan rute untuk SearchScreen
         composable(Screen.Search.route) {
-            // Mengambil data transaksi dari viewModel
-            val transactions by viewModel.transactions.observeAsState(emptyList()) // Pastikan transactions adalah LiveData atau StateFlow
+            val transactions by viewModel.transactions.observeAsState(emptyList())
 
-            // Navigasi ke SearchScreen dan meneruskan transaksi serta onBackClick
             SearchScreen(
                 transactions = transactions,
                 onBackClick = { navController.popBackStack() }

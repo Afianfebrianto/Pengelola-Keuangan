@@ -10,8 +10,10 @@ import com.project.pengelolakeuangan.data.AppDatabase
 import com.project.pengelolakeuangan.data.dao.TransactionDao
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.Month
 
@@ -211,6 +213,15 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         }
         return result
     }
+
+    suspend fun getDataForPeriod(startDate: String, endDate: String): Pair<List<Pemasukan>, List<Pengeluaran>> {
+        return withContext(Dispatchers.IO) {
+            val pemasukan = transactionDao.getPemasukanByDate(startDate, endDate)
+            val pengeluaran = transactionDao.getPengeluaranByDate(startDate, endDate)
+            Pair(pemasukan, pengeluaran)
+        }
+    }
+
 
 
 }
