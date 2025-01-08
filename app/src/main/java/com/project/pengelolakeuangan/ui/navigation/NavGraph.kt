@@ -62,7 +62,7 @@ fun AppNavGraph(
         }
 
         composable("settings") {
-            SettingsScreen(viewModel = viewModel)
+            SettingsScreen(viewModel = viewModel, navController = navController)
         }
 
         composable("download") {

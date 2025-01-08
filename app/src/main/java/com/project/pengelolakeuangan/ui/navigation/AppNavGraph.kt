@@ -9,10 +9,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,35 +22,33 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
-import com.project.pengelolakeuangan.utils.AppPreferences
+
 
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel, context: Context) {
-    val appPreferences = remember { AppPreferences(context) }
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
 
-        // Tampilkan konten utama aplikasi
-        val navBackStackEntry = navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry.value?.destination?.route
-
-        Scaffold(
-            bottomBar = {
-                if (currentRoute in listOf(Screen.Home.route, Screen.Transaction.route, Screen.Rekap.route, Screen.Account.route)) {
-                    BottomNavigationBar(
-                        currentRoute = currentRoute,
-                        onItemSelected = { route -> navController.navigate(route) }
-                    )
-                }
+    Scaffold(
+        bottomBar = {
+            if (currentRoute in listOf(Screen.Home.route, Screen.Transaction.route, Screen.Rekap.route, Screen.Account.route)) {
+                BottomNavigationBar(
+                    currentRoute = currentRoute,
+                    onItemSelected = { route -> navController.navigate(route) }
+                )
             }
-        ) { innerPadding ->
-            // Gunakan innerPadding untuk memastikan konten tidak terhalang bottom bar
+        }
+    ) { innerPadding ->
+        // Terapkan padding dari innerPadding ke konten utama
+        Box(modifier = Modifier.padding(innerPadding)) {
             AppNavGraph(
                 navController = navController,
-                viewModel = viewModel,
-                modifier = Modifier.padding(innerPadding)
+                viewModel = viewModel
             )
         }
-
+    }
 }
+
 
 
 

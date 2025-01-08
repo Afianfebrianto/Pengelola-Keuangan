@@ -31,11 +31,11 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,14 +44,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,11 +62,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 
-
-
-
-
-
 @Composable
 fun DonutChart(pemasukan: Double, pengeluaran: Double) {
     val total = pemasukan
@@ -80,7 +72,7 @@ fun DonutChart(pemasukan: Double, pengeluaran: Double) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp),
+            .height(210.dp),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.size(200.dp)) {
@@ -208,28 +200,100 @@ fun FinancialSummary(
 
 
 
+//@Composable
+//fun SearchScreen(
+//    transactions: List<TransactionData>,
+//    onBackClick: () -> Unit
+//) {
+//
+//
+//    // State untuk menyimpan query pencarian
+//    var searchQuery by remember { mutableStateOf("") }
+//
+//    // Filter transaksi berdasarkan pencarian
+//    val filteredTransactions = transactions.filter {
+//        it.detail.contains(searchQuery, ignoreCase = true) ||
+//                it.note.contains(searchQuery, ignoreCase = true)
+//    }
+//
+//    // Scaffold untuk layout dasar dengan top bar
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = { Text("Pencarian", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp) },
+//                backgroundColor = Color(0xFFF48FB1),
+//                navigationIcon = {
+//                    IconButton(onClick = { onBackClick() }) {
+//                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+//                    }
+//                }
+//            )
+//        }
+//    ) { paddingValues ->
+//        // Column untuk konten utama
+//        Column(modifier = Modifier.padding(paddingValues)) {
+//            // TextField untuk memasukkan kata kunci pencarian
+//            TextField(
+//                value = searchQuery,
+//                onValueChange = { searchQuery = it },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                placeholder = { Text("Mulai Mengetik...") },
+//                leadingIcon = {
+//                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
+//                },
+//                singleLine = true
+//            )
+//
+//            // Jika tidak ada transaksi yang ditemukan, tampilkan pesan
+//            if (filteredTransactions.isEmpty() && searchQuery.isNotEmpty()) {
+//                Text(
+//                    text = "Tidak ada hasil yang ditemukan",
+//                    style = MaterialTheme.typography.body2,
+//                    modifier = Modifier.padding(16.dp)
+//                )
+//            } else {
+//                // Menampilkan daftar transaksi yang difilter
+//                LazyColumn(modifier = Modifier.fillMaxSize()) {
+//                    items(filteredTransactions) { transaction ->
+//                        // Menampilkan item transaksi menggunakan TransactionItem
+//                        TransactionItem(transaction)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+
 @Composable
 fun SearchScreen(
     transactions: List<TransactionData>,
     onBackClick: () -> Unit
 ) {
-
-
-    // State untuk menyimpan query pencarian
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filter transaksi berdasarkan pencarian
     val filteredTransactions = transactions.filter {
         it.detail.contains(searchQuery, ignoreCase = true) ||
                 it.note.contains(searchQuery, ignoreCase = true)
     }
 
-    // Scaffold untuk layout dasar dengan top bar
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pencarian", color = Color.White) },
-                backgroundColor = Color(0xFFD81B60),
+                title = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = "Pencarian",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    }
+                },
+                backgroundColor = Color(0xFFF48FB1),
                 navigationIcon = {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -238,23 +302,40 @@ fun SearchScreen(
             )
         }
     ) { paddingValues ->
-        // Column untuk konten utama
-        Column(modifier = Modifier.padding(paddingValues)) {
-            // TextField untuk memasukkan kata kunci pencarian
-            TextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text("Mulai Mengetik...") },
-                leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
-                },
-                singleLine = true
-            )
+                shape = RoundedCornerShape(20.dp),
+                elevation = 4.dp // Menambahkan efek elevation
+            ) {
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    placeholder = {
+                        Text("Mulai Mengetik...")
+                    },
+                    leadingIcon = {
+                        Icon(Icons.Default.Search, contentDescription = "Search Icon")
+                    },
+                    singleLine = true,
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        cursorColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+            }
 
-            // Jika tidak ada transaksi yang ditemukan, tampilkan pesan
             if (filteredTransactions.isEmpty() && searchQuery.isNotEmpty()) {
                 Text(
                     text = "Tidak ada hasil yang ditemukan",
@@ -262,10 +343,8 @@ fun SearchScreen(
                     modifier = Modifier.padding(16.dp)
                 )
             } else {
-                // Menampilkan daftar transaksi yang difilter
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredTransactions) { transaction ->
-                        // Menampilkan item transaksi menggunakan TransactionItem
                         TransactionItem(transaction)
                     }
                 }
@@ -273,6 +352,8 @@ fun SearchScreen(
         }
     }
 }
+
+
 
 
 @Preview(showBackground = true)
@@ -330,10 +411,6 @@ fun DownloadScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         // ProgressBar yang akan ditampilkan saat proses download berlangsung
-        if (progressBarVisible) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -437,6 +514,7 @@ fun DownloadScreen(
         }
     }
 }
+
 
 
 
