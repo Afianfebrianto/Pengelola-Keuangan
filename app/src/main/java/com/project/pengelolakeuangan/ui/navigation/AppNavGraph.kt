@@ -1,6 +1,5 @@
 package com.project.pengelolakeuangan.ui.navigation
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -25,7 +24,7 @@ import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 
 
 @Composable
-fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel, context: Context) {
+fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 

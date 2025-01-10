@@ -60,10 +60,6 @@ fun WelcomeScreen1(onNextClick: () -> Unit) {
                 .padding(horizontal = 16.dp)
                 .align(Alignment.CenterHorizontally)
         )
-
-//        Button(onClick = onNextClick) {
-//            Text("Yuk, Mulai Sekarang!")
-//        }
     }
 }
 
@@ -107,10 +103,6 @@ fun WelcomeScreen2(onFinishClick: () -> Unit) {
                 .padding(horizontal = 16.dp)
                 .align(Alignment.CenterHorizontally)
         )
-//
-//        Button(onClick = onFinishClick) {
-//            Text("Mulai")
-//        }
     }
 }
 

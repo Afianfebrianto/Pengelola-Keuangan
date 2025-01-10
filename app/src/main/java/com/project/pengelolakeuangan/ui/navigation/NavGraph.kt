@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -35,14 +34,13 @@ sealed class Screen(val route: String) {
         fun createRoute(isIncome: Boolean) = "form/$isIncome"
     }
     object Search : Screen("search")
-    object Welcome : Screen("welcome")
 }
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     viewModel: TransaksiViewModel,
-    modifier: Modifier = Modifier
+
 ) {
     // Mendapatkan context hanya di dalam Composable
     val context = LocalContext.current
@@ -136,8 +134,7 @@ fun AppNavGraph(
                 },
                 onCancel = {
                     navController.popBackStack() // Kembali ke layar sebelumnya
-                },
-                viewModel = viewModel
+                }
             )
         }
 

@@ -32,14 +32,6 @@ interface TransactionDao {
     @Query("SELECT SUM(nominal) FROM pengeluaran")
     suspend fun getTotalPengeluaran(): Double?
 
-    // Mendapatkan semua pemasukan berdasarkan bulan
-    @Query("SELECT * FROM pemasukan WHERE strftime('%m', tanggal) = :month AND strftime('%Y', tanggal) = :year")
-    suspend fun getPemasukanByMonth(month: String, year: String): List<Pemasukan>
-
-    // Mendapatkan semua pengeluaran berdasarkan bulan
-    @Query("SELECT * FROM pengeluaran WHERE strftime('%m', tanggal) = :month AND strftime('%Y', tanggal) = :year")
-    suspend fun getPengeluaranByMonth(month: String, year: String): List<Pengeluaran>
-
     // Mendapatkan total pemasukan berdasarkan bulan
     @Query("SELECT SUM(nominal) FROM pemasukan WHERE strftime('%m', tanggal) = :month AND strftime('%Y', tanggal) = :year")
     suspend fun getTotalPemasukanByMonth(month: String, year: String): Double?

@@ -11,11 +11,9 @@ import com.project.pengelolakeuangan.data.dao.TransactionDao
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
-import java.time.Month
 
 class TransaksiViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -62,24 +60,6 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun getTotalPemasukan(): LiveData<Double> {
-        val totalPemasukan = MutableLiveData<Double>()
-        viewModelScope.launch {
-            val pemasukanList = transactionDao.getAllPemasukan()
-            totalPemasukan.postValue(pemasukanList.sumOf { it.nominal })
-        }
-        return totalPemasukan
-    }
-
-    // Mendapatkan total pengeluaran
-    fun getTotalPengeluaran(): LiveData<Double> {
-        val totalPengeluaran = MutableLiveData<Double>()
-        viewModelScope.launch {
-            val pengeluaranList = transactionDao.getAllPengeluaran()
-            totalPengeluaran.postValue(pengeluaranList.sumOf { it.nominal })
-        }
-        return totalPengeluaran
-    }
 
     // Extension function untuk mengonversi Pemasukan ke TransactionData
     fun Pemasukan.toTransactionData(isIncome: Boolean): TransactionData {
@@ -105,24 +85,6 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         )
     }
 
-    fun loadTransactionsForMonth(selectedMonth: Month) {
-        viewModelScope.launch {
-            val pemasukanFiltered = transactionDao.getAllPemasukan().filter { pemasukan ->
-                LocalDate.parse(pemasukan.tanggal).month == selectedMonth
-            }
-            val pengeluaranFiltered = transactionDao.getAllPengeluaran().filter { pengeluaran ->
-                LocalDate.parse(pengeluaran.tanggal).month == selectedMonth
-            }
-
-            // Update LiveData dengan data transaksi yang difilter
-            val combinedTransactions = (pemasukanFiltered.map { it.toTransactionData(true) } +
-                    pengeluaranFiltered.map { it.toTransactionData(false) })
-                .sortedByDescending { it.date }
-
-            _transactions.postValue(combinedTransactions)
-        }
-    }
-
     fun clearDatabase() {
         // Menghapus semua data transaksi dari database
         viewModelScope.launch {
@@ -132,36 +94,6 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    // Fungsi untuk memuat transaksi berdasarkan bulan dan tahun
-    fun loadTransactionsForMonth(month: Int, year: Int) {
-        // Logika untuk memuat transaksi berdasarkan bulan dan tahun
-        // Pastikan Anda mengubah query Room atau data lainnya berdasarkan bulan dan tahun
-    }
-
-
-
-    //new cuk
-    // LiveData untuk menampilkan hasil pencarian
-    private val _searchResults = MutableLiveData<List<TransactionData>>()
-    val searchResults: LiveData<List<TransactionData>> = _searchResults
-
-    // Fungsi untuk melakukan pencarian transaksi berdasarkan query
-    fun searchTransactions(query: String) {
-        viewModelScope.launch {
-            // Menggabungkan hasil pencarian pemasukan dan pengeluaran
-            val pemasukanFlow = transactionDao.searchPemasukan(query)
-            val pengeluaranFlow = transactionDao.searchPengeluaran(query)
-
-            // Kombinasikan data dari kedua tabel
-            pemasukanFlow.combine(pengeluaranFlow) { pemasukanList, pengeluaranList ->
-                (pemasukanList.map { it.toTransactionData(true) } +
-                        pengeluaranList.map { it.toTransactionData(false) })
-                    .sortedByDescending { it.date } // Urutkan berdasarkan tanggal
-            }.collect { combinedResults ->
-                _searchResults.postValue(combinedResults) // Post hasil pencarian ke LiveData
-            }
-        }
-    }
 
     fun getTransactionsByMonth(year: Int, month: Int): List<TransactionData> {
         val filteredTransactions = transactions.value?.filter { transaction ->
@@ -170,49 +102,7 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         return filteredTransactions
     }
 
-    // Menyaring Pemasukan berdasarkan rentang waktu
-    fun getPemasukanByPeriod(startDate: String, endDate: String): LiveData<List<Pemasukan>> {
-        val filteredPemasukan = MutableLiveData<List<Pemasukan>>()
-        viewModelScope.launch {
-            val pemasukanList = transactionDao.getAllPemasukan().filter {
-                val transaksiDate = LocalDate.parse(it.tanggal)
-                transaksiDate.isAfter(LocalDate.parse(startDate).minusDays(1)) && transaksiDate.isBefore(LocalDate.parse(endDate).plusDays(1))
-            }
-            filteredPemasukan.postValue(pemasukanList)
-        }
-        return filteredPemasukan
-    }
 
-    // Menyaring Pengeluaran berdasarkan rentang waktu
-    fun getPengeluaranByPeriod(startDate: String, endDate: String): LiveData<List<Pengeluaran>> {
-        val filteredPengeluaran = MutableLiveData<List<Pengeluaran>>()
-        viewModelScope.launch {
-            val pengeluaranList = transactionDao.getAllPengeluaran().filter {
-                val transaksiDate = LocalDate.parse(it.tanggal)
-                transaksiDate.isAfter(LocalDate.parse(startDate).minusDays(1)) && transaksiDate.isBefore(LocalDate.parse(endDate).plusDays(1))
-            }
-            filteredPengeluaran.postValue(pengeluaranList)
-        }
-        return filteredPengeluaran
-    }
-
-    // Mengambil semua pemasukan
-    fun getAllPemasukan(): LiveData<List<Pemasukan>> {
-        val result = MutableLiveData<List<Pemasukan>>()
-        viewModelScope.launch {
-            result.postValue(transactionDao.getAllPemasukan())
-        }
-        return result
-    }
-
-    // Mengambil semua pengeluaran
-    fun getAllPengeluaran(): LiveData<List<Pengeluaran>> {
-        val result = MutableLiveData<List<Pengeluaran>>()
-        viewModelScope.launch {
-            result.postValue(transactionDao.getAllPengeluaran())
-        }
-        return result
-    }
 
     suspend fun getDataForPeriod(startDate: String, endDate: String): Pair<List<Pemasukan>, List<Pengeluaran>> {
         return withContext(Dispatchers.IO) {
