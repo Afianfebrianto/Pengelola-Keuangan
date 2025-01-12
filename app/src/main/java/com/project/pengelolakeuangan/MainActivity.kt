@@ -12,14 +12,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.project.pengelolakeuangan.ui.navigation.MainScreen
 import com.project.pengelolakeuangan.ui.screens.splash.WelcomeScreens
-import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
 import com.project.pengelolakeuangan.ui.theme.PengelolaKeuanganTheme
+import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import com.project.pengelolakeuangan.utils.AppPreferences
 
 
 class MainActivity : ComponentActivity() {
 
-        override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -28,24 +28,27 @@ class MainActivity : ComponentActivity() {
             val appPreferences = AppPreferences(this)
             val isFirstLaunch = appPreferences.isFirstLaunch()
 
-            if (isFirstLaunch){
+            if (isFirstLaunch) {
                 appPreferences.setFirstLaunch(false)  // Tandai sudah diluncurkan
                 setContent {
                     WelcomeScreens(onFinish = {
                         // Setelah WelcomeScreen selesai, arahkan ke HomeScreen
-                        startActivity(Intent(this, MainActivity::class.java)) // Mulai MainActivity lagi
+                        startActivity(
+                            Intent(
+                                this,
+                                MainActivity::class.java
+                            )
+                        ) // Mulai MainActivity lagi
                         finish()  // Tutup activity sebelumnya
                     })
                 }
-            }else{
-                setContent{ MainScreen(navController = navController, viewModel = viewModel)}
+            } else {
+                setContent { MainScreen(navController = navController, viewModel = viewModel) }
             }
 
         }
     }
 }
-
-
 
 
 @Composable

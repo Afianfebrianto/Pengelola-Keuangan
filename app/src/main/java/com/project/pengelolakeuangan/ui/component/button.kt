@@ -1,4 +1,4 @@
-package com.project.pengelolakeuangan.ui.screens
+package com.project.pengelolakeuangan.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

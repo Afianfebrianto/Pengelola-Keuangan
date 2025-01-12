@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -31,48 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.project.pengelolakeuangan.ui.component.DatePickerDialog
+import com.project.pengelolakeuangan.ui.component.FinancialSummary
+import com.project.pengelolakeuangan.ui.component.TransactionItem
 import com.project.pengelolakeuangan.ui.navigation.Screen
-import com.project.pengelolakeuangan.ui.screens.DatePickerDialog
-import com.project.pengelolakeuangan.ui.screens.FinancialSummary
-import com.project.pengelolakeuangan.ui.screens.formatToRupiah
-import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionData
-import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
+import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
-// Item untuk menampilkan satu transaksi
-@Composable
-fun TransactionItem(transaction: TransactionData) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 4.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = transaction.date.format(DateTimeFormatter.ofPattern("dd MMM yyyy")))
-                Text(text = transaction.method, style = MaterialTheme.typography.body2)
-                Text(text = transaction.detail, style = MaterialTheme.typography.body2)
-            }
-
-            // Nominal dengan format Rp
-            Text(
-                text = if (transaction.isIncome) "${formatToRupiah(transaction.nominal)}"
-                else "-${formatToRupiah(transaction.nominal)}",
-                style = MaterialTheme.typography.h6,
-                color = if (transaction.isIncome) Color(0xFF4CAF50) else Color(0xFFF44336)
-            )
-        }
-    }
-}
 
 
 @Composable

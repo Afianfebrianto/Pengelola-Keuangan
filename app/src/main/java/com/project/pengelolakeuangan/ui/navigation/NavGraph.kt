@@ -12,15 +12,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
-import com.project.pengelolakeuangan.ui.screens.DownloadScreen
-import com.project.pengelolakeuangan.ui.screens.SearchScreen
+import com.project.pengelolakeuangan.ui.component.DownloadScreen
+import com.project.pengelolakeuangan.ui.component.SearchScreen
+import com.project.pengelolakeuangan.ui.component.SettingsScreen
+import com.project.pengelolakeuangan.ui.component.TransactionFormScreen
 import com.project.pengelolakeuangan.ui.screens.beranda.HomeScreen
 import com.project.pengelolakeuangan.ui.screens.profile.ProfileScreen
-import com.project.pengelolakeuangan.ui.screens.profile.SettingsScreen
 import com.project.pengelolakeuangan.ui.screens.rekap.RekapScreen
-import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionFormScreen
 import com.project.pengelolakeuangan.ui.screens.transaksi.TransactionsScreen
-import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
+import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import createPDF
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -33,6 +33,7 @@ sealed class Screen(val route: String) {
     object Form : Screen("form/{isIncome}") {
         fun createRoute(isIncome: Boolean) = "form/$isIncome"
     }
+
     object Search : Screen("search")
 }
 
@@ -41,7 +42,7 @@ fun AppNavGraph(
     navController: NavHostController,
     viewModel: TransaksiViewModel,
 
-) {
+    ) {
     // Mendapatkan context hanya di dalam Composable
     val context = LocalContext.current
 
@@ -71,10 +72,17 @@ fun AppNavGraph(
                 onDownloadClick = { startDate, endDate ->
                     coroutineScope.launch {
                         try {
-                            val (filteredPemasukan, filteredPengeluaran) = viewModel.getDataForPeriod(startDate, endDate)
+                            val (filteredPemasukan, filteredPengeluaran) = viewModel.getDataForPeriod(
+                                startDate,
+                                endDate
+                            )
 
                             if (filteredPemasukan.isEmpty() && filteredPengeluaran.isEmpty()) {
-                                Toast.makeText(context, "Tidak ada data untuk periode ini.", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    context,
+                                    "Tidak ada data untuk periode ini.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                                 return@launch
                             }
 
@@ -87,7 +95,11 @@ fun AppNavGraph(
                             )
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            Toast.makeText(context, "Gagal mengambil data: ${e.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "Gagal mengambil data: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 }

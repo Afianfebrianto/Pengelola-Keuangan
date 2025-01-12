@@ -49,18 +49,16 @@ interface TransactionDao {
     suspend fun deleteAllPengeluaran()
 
     @Query("SELECT * FROM pemasukan WHERE sumberPemasukan LIKE '%' || :query || '%' OR catatan LIKE '%' || :query || '%'")
-   fun searchPemasukan(query: String): Flow<List<Pemasukan>>
+    fun searchPemasukan(query: String): Flow<List<Pemasukan>>
 
-   @Query("SELECT * FROM pengeluaran WHERE tujuanPengeluaran LIKE '%' || :query || '%' OR catatan LIKE '%' || :query || '%'")
-  fun searchPengeluaran(query: String): Flow<List<Pengeluaran>>
+    @Query("SELECT * FROM pengeluaran WHERE tujuanPengeluaran LIKE '%' || :query || '%' OR catatan LIKE '%' || :query || '%'")
+    fun searchPengeluaran(query: String): Flow<List<Pengeluaran>>
 
     @Query("SELECT * FROM Pemasukan WHERE tanggal BETWEEN :startDate AND :endDate")
     fun getPemasukanByDate(startDate: String, endDate: String): List<Pemasukan>
 
     @Query("SELECT * FROM Pengeluaran WHERE tanggal BETWEEN :startDate AND :endDate")
     fun getPengeluaranByDate(startDate: String, endDate: String): List<Pengeluaran>
-
-
 
 
 }

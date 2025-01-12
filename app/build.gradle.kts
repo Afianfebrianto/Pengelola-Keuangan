@@ -61,11 +61,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.androidx.material)
-    implementation ("com.google.accompanist:accompanist-pager:0.24.13-rc")
+    implementation(libs.androidx.material)
+    implementation("com.google.accompanist:accompanist-pager:0.24.13-rc")
 
     //viewmodel
-    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     //database
     ksp(libs.androidx.room.compiler)
@@ -73,5 +73,5 @@ dependencies {
     implementation(libs.androidx.room.ktx)
 
     //pdfmaker
-    implementation ("com.itextpdf:itext7-core:7.2.3")
+    implementation("com.itextpdf:itext7-core:7.2.3")
 }

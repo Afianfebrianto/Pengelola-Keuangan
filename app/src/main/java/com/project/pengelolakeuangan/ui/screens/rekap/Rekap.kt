@@ -30,11 +30,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.R
+import com.project.pengelolakeuangan.ui.component.DonutChart
+import com.project.pengelolakeuangan.ui.component.FinancialSummary
+import com.project.pengelolakeuangan.ui.component.TransactionItem
 import com.project.pengelolakeuangan.ui.navigation.Screen
-import com.project.pengelolakeuangan.ui.screens.DonutChart
-import com.project.pengelolakeuangan.ui.screens.FinancialSummary
-import com.project.pengelolakeuangan.ui.screens.beranda.TransactionItem
-import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
+import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

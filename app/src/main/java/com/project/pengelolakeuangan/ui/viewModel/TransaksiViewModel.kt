@@ -1,4 +1,4 @@
-package com.project.pengelolakeuangan.ui.screens.transaksi
+package com.project.pengelolakeuangan.ui.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.project.pengelolakeuangan.data.AppDatabase
+import com.project.pengelolakeuangan.data.TransactionData
 import com.project.pengelolakeuangan.data.dao.TransactionDao
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
@@ -23,7 +24,8 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         val db = Room.databaseBuilder(
             application.applicationContext,
             AppDatabase::class.java, "transaction-database"
-        ).fallbackToDestructiveMigration().build()  // Pastikan menggunakan fallbackToDestructiveMigration untuk memudahkan pengembangan.
+        ).fallbackToDestructiveMigration()
+            .build()  // Pastikan menggunakan fallbackToDestructiveMigration untuk memudahkan pengembangan.
         transactionDao = db.transactionDao()
     }
 
@@ -40,6 +42,7 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
             transactionDao.insertPengeluaran(pengeluaran)
         }
     }
+
     // Fungsi untuk mengambil semua transaksi (pemasukan + pengeluaran)
     private val _transactions = MutableLiveData<List<TransactionData>>()
     val transactions: LiveData<List<TransactionData>> = _transactions
@@ -103,15 +106,16 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
 
-
-    suspend fun getDataForPeriod(startDate: String, endDate: String): Pair<List<Pemasukan>, List<Pengeluaran>> {
+    suspend fun getDataForPeriod(
+        startDate: String,
+        endDate: String
+    ): Pair<List<Pemasukan>, List<Pengeluaran>> {
         return withContext(Dispatchers.IO) {
             val pemasukan = transactionDao.getPemasukanByDate(startDate, endDate)
             val pengeluaran = transactionDao.getPengeluaranByDate(startDate, endDate)
             Pair(pemasukan, pengeluaran)
         }
     }
-
 
 
 }

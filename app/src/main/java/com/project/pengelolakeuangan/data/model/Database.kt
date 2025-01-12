@@ -13,6 +13,7 @@ data class Pemasukan(
     val catatan: String?,
     val nominal: Double
 )
+
 @Entity(tableName = "pengeluaran")
 data class Pengeluaran(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

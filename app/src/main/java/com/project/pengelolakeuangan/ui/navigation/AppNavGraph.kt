@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.project.pengelolakeuangan.R
-import com.project.pengelolakeuangan.ui.screens.transaksi.TransaksiViewModel
+import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 
 
 @Composable
@@ -30,7 +30,13 @@ fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
 
     Scaffold(
         bottomBar = {
-            if (currentRoute in listOf(Screen.Home.route, Screen.Transaction.route, Screen.Rekap.route, Screen.Account.route)) {
+            if (currentRoute in listOf(
+                    Screen.Home.route,
+                    Screen.Transaction.route,
+                    Screen.Rekap.route,
+                    Screen.Account.route
+                )
+            ) {
                 BottomNavigationBar(
                     currentRoute = currentRoute,
                     onItemSelected = { route -> navController.navigate(route) }
@@ -47,12 +53,6 @@ fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
         }
     }
 }
-
-
-
-
-
-
 
 @Composable
 fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit) {

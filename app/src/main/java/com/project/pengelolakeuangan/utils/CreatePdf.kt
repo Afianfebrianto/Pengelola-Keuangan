@@ -1,4 +1,3 @@
-
 import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
@@ -84,7 +83,15 @@ fun createPDF(
         canvas,
         title = "Pengeluaran",
         headers = listOf("Tanggal", "Metode", "Tujuan", "Catatan", "Nominal"),
-        data = pengeluaranList.map { listOf(it.tanggal, it.metode, it.tujuanPengeluaran, it.catatan ?: "-", it.nominal.formatCurrency()) },
+        data = pengeluaranList.map {
+            listOf(
+                it.tanggal,
+                it.metode,
+                it.tujuanPengeluaran,
+                it.catatan ?: "-",
+                it.nominal.formatCurrency()
+            )
+        },
         yOffset = yOffset,
         pageWidth = pageWidth,
         paint = paint
@@ -98,7 +105,15 @@ fun createPDF(
         canvas,
         title = "Pemasukan",
         headers = listOf("Tanggal", "Metode", "Sumber", "Catatan", "Nominal"),
-        data = pemasukanList.map { listOf(it.tanggal, it.metode, it.sumberPemasukan, it.catatan ?: "-", it.nominal.formatCurrency()) },
+        data = pemasukanList.map {
+            listOf(
+                it.tanggal,
+                it.metode,
+                it.sumberPemasukan,
+                it.catatan ?: "-",
+                it.nominal.formatCurrency()
+            )
+        },
         yOffset = yOffset,
         pageWidth = pageWidth,
         paint = paint
@@ -116,31 +131,40 @@ fun createPDF(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Android 10 ke atas menggunakan MediaStore untuk menyimpan di folder Downloads
             val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, "Rekap_Transaksi_${startDate}_to_${endDate}.pdf")
+                put(
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    "Rekap_Transaksi_${startDate}_to_${endDate}.pdf"
+                )
                 put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
                 put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/") // Folder Downloads
             }
 
             val contentResolver = context.contentResolver
-            val uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+            val uri =
+                contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
 
             uri?.let {
                 contentResolver.openOutputStream(it)?.use { outputStream ->
                     outputStream.write(pdfData)
                     outputStream.flush()
                 }
-                Toast.makeText(context, "PDF berhasil disimpan di Downloads", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "PDF berhasil disimpan di Downloads", Toast.LENGTH_LONG)
+                    .show()
                 openPDF(context, uri) // Membuka file PDF setelah disimpan
             }
         } else {
             // Untuk API Level lebih rendah (di bawah Android 10)
-            val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "Rekap_Transaksi_${startDate}_to_${endDate}.pdf")
+            val file = File(
+                context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+                "Rekap_Transaksi_${startDate}_to_${endDate}.pdf"
+            )
             try {
                 FileOutputStream(file).use { outputStream ->
                     outputStream.write(pdfData)
                     outputStream.flush()
                 }
-                Toast.makeText(context, "PDF berhasil disimpan di Downloads", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "PDF berhasil disimpan di Downloads", Toast.LENGTH_LONG)
+                    .show()
                 openPDF(context, Uri.fromFile(file)) // Membuka file PDF setelah disimpan
             } catch (e: IOException) {
                 e.printStackTrace()

@@ -24,7 +24,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.project.pengelolakeuangan.R
-import com.project.pengelolakeuangan.ui.screens.WelcomeButton
+import com.project.pengelolakeuangan.ui.component.WelcomeButton
 import kotlinx.coroutines.launch
 
 @Composable
@@ -119,6 +119,7 @@ fun WelcomeScreens(onFinish: () -> Unit) {
                     coroutineScope.launch { pagerState.animateScrollToPage(1) }
                 }
             )
+
             1 -> WelcomeScreen2(
                 onFinishClick = { onFinish() }
             )
