@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.project.pengelolakeuangan.data.TransactionData
 import com.project.pengelolakeuangan.utils.formatToRupiah
+import com.project.pengelolakeuangan.utils.poppinsFamily
 import java.time.format.DateTimeFormatter
 
 // Item untuk menampilkan satu transaksi
@@ -34,9 +35,9 @@ fun TransactionItem(transaction: TransactionData) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = transaction.date.format(DateTimeFormatter.ofPattern("dd MMM yyyy")))
-                Text(text = transaction.method, style = MaterialTheme.typography.body2)
-                Text(text = transaction.detail, style = MaterialTheme.typography.body2)
+                Text(text = transaction.date.format(DateTimeFormatter.ofPattern("dd MMM yyyy")), fontFamily = poppinsFamily)
+                Text(text = transaction.method, style = MaterialTheme.typography.body2, fontFamily = poppinsFamily)
+                Text(text = transaction.detail, style = MaterialTheme.typography.body2, fontFamily = poppinsFamily)
             }
 
             // Nominal dengan format Rp
@@ -44,7 +45,9 @@ fun TransactionItem(transaction: TransactionData) {
                 text = if (transaction.isIncome) "${formatToRupiah(transaction.nominal)}"
                 else "-${formatToRupiah(transaction.nominal)}",
                 style = MaterialTheme.typography.h6,
-                color = if (transaction.isIncome) Color(0xFF4CAF50) else Color(0xFFF44336)
+                color = if (transaction.isIncome) Color(0xFF4CAF50) else Color(0xFFF44336),
+                fontFamily = poppinsFamily
+
             )
         }
     }

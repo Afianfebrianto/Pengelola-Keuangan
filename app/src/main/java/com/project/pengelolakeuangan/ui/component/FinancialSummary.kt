@@ -15,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.project.pengelolakeuangan.utils.formatToRupiahh
+import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun FinancialSummary(
@@ -40,20 +42,22 @@ fun FinancialSummary(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Pemasukan", style = MaterialTheme.typography.body1)
+                    Text(text = "Pemasukan", style = MaterialTheme.typography.body1, fontFamily = poppinsFamily, fontWeight = FontWeight.Bold)
                     Text(
                         text = "${formatToRupiahh(totalIncome)}",
                         style = MaterialTheme.typography.h6,
-                        color = Color(0xFF4CAF50)
+                        color = Color(0xFF4CAF50),
+                        fontFamily = poppinsFamily
                     )
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Pengeluaran", style = MaterialTheme.typography.body1)
+                    Text(text = "Pengeluaran", style = MaterialTheme.typography.body1, fontFamily = poppinsFamily, fontWeight = FontWeight.Bold)
                     Text(
                         text = "${formatToRupiahh(totalExpense)}",
                         style = MaterialTheme.typography.h6,
-                        color = Color(0xFFF44336)
+                        color = Color(0xFFF44336),
+                        fontFamily = poppinsFamily
                     )
                 }
             }
@@ -66,11 +70,12 @@ fun FinancialSummary(
                     .padding(top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Saldo", style = MaterialTheme.typography.body1)
+                Text(text = "Saldo", style = MaterialTheme.typography.body1, fontFamily = poppinsFamily, fontWeight = FontWeight.Bold)
                 Text(
                     text = "${formatToRupiahh(balance)}",
                     style = MaterialTheme.typography.h6,
-                    color = Color(0xFF2196F3)
+                    color = Color(0xFF2196F3),
+                    fontFamily = poppinsFamily
                 )
             }
         }

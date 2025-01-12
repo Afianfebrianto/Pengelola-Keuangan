@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.pengelolakeuangan.data.TransactionData
+import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun SearchScreen(
@@ -55,7 +56,8 @@ fun SearchScreen(
                             text = "Pencarian",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                            fontSize = 20.sp,
+                            fontFamily = poppinsFamily
                         )
                     }
                 },
@@ -91,7 +93,7 @@ fun SearchScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     placeholder = {
-                        Text("Mulai Mengetik...")
+                        Text("Mulai Mengetik...", fontFamily = poppinsFamily)
                     },
                     leadingIcon = {
                         Icon(Icons.Default.Search, contentDescription = "Search Icon")
@@ -110,7 +112,8 @@ fun SearchScreen(
                 Text(
                     text = "Tidak ada hasil yang ditemukan",
                     style = MaterialTheme.typography.body2,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    fontFamily = poppinsFamily
                 )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {

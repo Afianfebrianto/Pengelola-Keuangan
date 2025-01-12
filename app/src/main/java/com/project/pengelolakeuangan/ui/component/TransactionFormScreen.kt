@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.project.pengelolakeuangan.data.TransactionData
+import com.project.pengelolakeuangan.utils.poppinsFamily
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -63,7 +64,7 @@ fun TransactionFormScreen(
         AlertDialog(
             onDismissRequest = { showDialog.value = false },
             title = { Text("Data Berhasil Disimpan") },
-            text = { Text("Transaksi Anda telah berhasil disimpan.") },
+            text = { Text("Transaksi Anda telah berhasil disimpan.", fontFamily = poppinsFamily) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -101,7 +102,8 @@ fun TransactionFormScreen(
             Text(
                 text = if (isIncome) "Pemasukan" else "Pengeluaran",
                 style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
+                fontFamily = poppinsFamily
             )
 
             // Tombol Save di kanan atas
@@ -142,7 +144,7 @@ fun TransactionFormScreen(
                 },
                 modifier = Modifier.align(Alignment.CenterEnd)
             ) {
-                Text(text = "Simpan")
+                Text(text = "Simpan", fontFamily = poppinsFamily)
             }
         }
 
@@ -156,7 +158,7 @@ fun TransactionFormScreen(
             OutlinedTextField(
                 value = nominal.value,
                 onValueChange = { nominal.value = it },
-                label = { Text("Nominal") },
+                label = { Text("Nominal",fontFamily = poppinsFamily) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -168,7 +170,7 @@ fun TransactionFormScreen(
             ) {
                 Text("Tanggal: ${selectedDate.value.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))}")
                 TextButton(onClick = { showDatePicker.value = true }) {
-                    Text("Pilih Tanggal")
+                    Text("Pilih Tanggal",fontFamily = poppinsFamily)
                 }
             }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun WelcomeButton(
@@ -47,7 +48,9 @@ fun WelcomeButton(
             text = text,
             color = Color.Black,
             style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontFamily = poppinsFamily
+
         )
     }
 }

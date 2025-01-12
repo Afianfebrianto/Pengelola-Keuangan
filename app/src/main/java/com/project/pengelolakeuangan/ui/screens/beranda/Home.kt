@@ -35,6 +35,7 @@ import com.project.pengelolakeuangan.ui.component.FinancialSummary
 import com.project.pengelolakeuangan.ui.component.TransactionItem
 import com.project.pengelolakeuangan.ui.navigation.Screen
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
+import com.project.pengelolakeuangan.utils.poppinsFamily
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -103,7 +104,8 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
                     Text(
                         text = selectedDate.value.format(dateFormatter),
                         color = Color.White,
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h6,
+                        fontFamily = poppinsFamily
                     )
                 }
 

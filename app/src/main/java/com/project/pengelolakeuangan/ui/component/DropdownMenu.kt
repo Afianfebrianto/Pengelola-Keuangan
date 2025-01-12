@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun DropdownMenu(
@@ -34,7 +35,7 @@ fun DropdownMenu(
                     onOptionSelected(option)
                     expanded = false
                 }) {
-                    Text(option)
+                    Text(option, fontFamily = poppinsFamily)
                 }
             }
         }

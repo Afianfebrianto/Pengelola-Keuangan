@@ -48,6 +48,7 @@ import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import com.project.pengelolakeuangan.utils.formatToRupiah
 import com.project.pengelolakeuangan.utils.getStoredName
+import com.project.pengelolakeuangan.utils.poppinsFamily
 import com.project.pengelolakeuangan.utils.saveName
 
 @Composable
@@ -82,7 +83,8 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
         Text(
             text = "Akun",
             style = MaterialTheme.typography.h5, // Perbesar header
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
+            fontFamily = poppinsFamily
         )
 
         // Baris nama dengan gambar kucing dan ikon edit
@@ -127,7 +129,8 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
                 Text(
                     text = "Hi, $name!",
                     style = MaterialTheme.typography.h5, // Perbesar teks nama
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    fontFamily = poppinsFamily
                 )
                 IconButton(onClick = { isEditing = true }) {
                     Icon(Icons.Default.Edit, contentDescription = "Edit Name")
@@ -147,7 +150,8 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
             Text(
                 text = stringResource(R.string.kekayaan_bersih),
                 style = MaterialTheme.typography.button,
-                color = Color.White
+                color = Color.White,
+                fontFamily = poppinsFamily
             )
         }
 
@@ -158,7 +162,8 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
             text = formatToRupiah(balance),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(vertical = 8.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = poppinsFamily
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -179,7 +184,8 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Pengaturan Akun",
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                fontFamily = poppinsFamily
             )
         }
     }

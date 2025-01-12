@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.project.pengelolakeuangan.utils.poppinsFamily
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -73,14 +74,16 @@ fun DownloadScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Download Rekapan Transaksi",
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.h6,
+                    fontFamily = poppinsFamily
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = "Pilih Periode\nRentang periode maksimum 1 tahun.",
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                fontFamily = poppinsFamily
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -99,7 +102,7 @@ fun DownloadScreen(
                 Text(text = startDate.value.format(dateFormatter))
             }
 
-            Text(text = "Sampai*", style = MaterialTheme.typography.body2)
+            Text(text = "Sampai*", style = MaterialTheme.typography.body2, fontFamily = poppinsFamily)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +114,7 @@ fun DownloadScreen(
                     .clickable { showDatePicker.value = true to "end" }
                     .padding(16.dp)
             ) {
-                Text(text = endDate.value.format(dateFormatter))
+                Text(text = endDate.value.format(dateFormatter), fontFamily = poppinsFamily)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -142,7 +145,7 @@ fun DownloadScreen(
                     backgroundColor = if (isValidPeriod) Color(0xFFE91E63) else Color.Gray
                 )
             ) {
-                Text(text = "Download", color = Color.White)
+                Text(text = "Download", color = Color.White, fontFamily = poppinsFamily)
             }
 
             if (showDatePicker.value.first) {

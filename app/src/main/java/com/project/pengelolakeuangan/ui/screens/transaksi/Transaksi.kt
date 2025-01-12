@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.component.TransactionItem
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
+import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: TransaksiViewModel) {
@@ -44,7 +45,8 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: T
         Text(
             text = "Transaksi",
             style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier.padding(bottom = 32.dp),
+            fontFamily = poppinsFamily
         )
 
         // Tombol untuk Pemasukan dan Pengeluaran
@@ -84,7 +86,7 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: T
                         tint = Color.White
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Pengeluaran", color = Color.White)
+                    Text(text = "Pengeluaran", color = Color.White,fontFamily = poppinsFamily)
                 }
             }
         }

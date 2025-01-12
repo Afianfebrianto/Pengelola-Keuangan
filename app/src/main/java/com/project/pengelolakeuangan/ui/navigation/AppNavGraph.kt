@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
+import com.project.pengelolakeuangan.utils.poppinsFamily
 
 
 @Composable
@@ -91,6 +92,7 @@ fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit)
                         modifier = Modifier.background(Color.Transparent) // Menjadikan background label transparan
                     ) {
                         Text(
+                            fontFamily = poppinsFamily,
                             text = screen.route.capitalize(),
                             color = Color.Black // Menentukan warna teks
                         )

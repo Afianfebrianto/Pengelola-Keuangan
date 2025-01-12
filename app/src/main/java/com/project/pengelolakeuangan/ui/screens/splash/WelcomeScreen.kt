@@ -25,7 +25,9 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.component.WelcomeButton
+import com.project.pengelolakeuangan.utils.poppinsFamily
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun WelcomeScreen1(onNextClick: () -> Unit) {
@@ -48,7 +50,8 @@ fun WelcomeScreen1(onNextClick: () -> Unit) {
             text = "Halo, Jadikan Keuanganmu\nLebih Terkendali!",
             style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black),
             modifier = Modifier.padding(8.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontFamily = poppinsFamily
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -82,7 +85,8 @@ fun WelcomeScreen2(onFinishClick: () -> Unit) {
 
         Text(
             text = "Selamat Datang",
-            style = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+            style = TextStyle(fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.Black),
+            fontFamily = poppinsFamily
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -90,6 +94,7 @@ fun WelcomeScreen2(onFinishClick: () -> Unit) {
         Text(
             text = "Yuk, Kelola Keuangan Anda\nDengan Mudah!",
             style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black),
+            fontFamily = poppinsFamily,
             modifier = Modifier.padding(8.dp),
             textAlign = TextAlign.Center
         )

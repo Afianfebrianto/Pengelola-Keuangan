@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import com.project.pengelolakeuangan.utils.clearUserData
+import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun SettingsScreen(viewModel: TransaksiViewModel, navController: NavController) {
@@ -42,7 +43,7 @@ fun SettingsScreen(viewModel: TransaksiViewModel, navController: NavController) 
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
             title = { Text("Konfirmasi") },
-            text = { Text("Apakah Anda yakin ingin menghapus semua data?") },
+            text = { Text("Apakah Anda yakin ingin menghapus semua data?", fontFamily = poppinsFamily) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -51,14 +52,14 @@ fun SettingsScreen(viewModel: TransaksiViewModel, navController: NavController) 
                         openDialog.value = false
                     }
                 ) {
-                    Text("Ya")
+                    Text("Ya", fontFamily = poppinsFamily)
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { openDialog.value = false }
                 ) {
-                    Text("Tidak")
+                    Text("Tidak", fontFamily = poppinsFamily)
                 }
             }
         )
@@ -85,7 +86,8 @@ fun SettingsScreen(viewModel: TransaksiViewModel, navController: NavController) 
             Text(
                 text = "Pengaturan Akun",
                 style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 8.dp),
+                fontFamily = poppinsFamily
             )
         }
 
@@ -108,7 +110,8 @@ fun SettingsScreen(viewModel: TransaksiViewModel, navController: NavController) 
             Text(
                 text = "Hapus Semua Data",
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                fontFamily = poppinsFamily
             )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
