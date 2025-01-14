@@ -105,6 +105,14 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
         return filteredTransactions
     }
 
+    // **Fungsi baru: Mengambil transaksi berdasarkan tahun**
+    fun getTransactionsByYear(year: Int): List<TransactionData> {
+        val filteredTransactions = transactions.value?.filter { transaction ->
+            transaction.date.year == year
+        } ?: emptyList()
+        return filteredTransactions
+    }
+
 
     suspend fun getDataForPeriod(
         startDate: String,
