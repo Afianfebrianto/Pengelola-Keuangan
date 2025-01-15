@@ -1,5 +1,6 @@
 package com.project.pengelolakeuangan.ui.component
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -191,11 +193,19 @@ fun EditTransactionScreen(
 ) {
     val showDatePicker = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val nominal = remember { mutableStateOf(transaction.nominal.toString()) }
     val selectedDate = remember { mutableStateOf(transaction.date) }
-    val method = remember { mutableStateOf(transaction.method) }
-    val typeDetail = remember { mutableStateOf(transaction.detail) }
-    val note = remember { mutableStateOf(transaction.note) }
+    val nominal = remember { mutableStateOf("") }
+    val method = remember { mutableStateOf("") }
+    val typeDetail = remember { mutableStateOf("") }
+    val note = remember { mutableStateOf("") }
+
+    LaunchedEffect(transaction) {
+        nominal.value = transaction.nominal.toString()
+        selectedDate.value = transaction.date
+        method.value = transaction.method
+        typeDetail.value = transaction.detail
+        note.value = transaction.note
+    }
 
     // Show DatePickerDialog if necessary
     if (showDatePicker.value) {
@@ -341,7 +351,7 @@ fun EditTransactionScreen(
 
 
 @Composable
-fun EditTransactionScreen1(
+fun EditTransactionScreen11(
     transaction: TransactionData,
     onSave: (TransactionData) -> Unit,
     onDelete: (Int) -> Unit,
@@ -500,4 +510,13 @@ fun EditTransactionScreen1(
 
         }
     }
+
+    LaunchedEffect(nominal.value, selectedDate.value, method.value, typeDetail.value, note.value) {
+        Log.d("EditTransactionScreen", "Nominal: ${nominal.value}")
+        Log.d("EditTransactionScreen", "SelectedDate: ${selectedDate.value}")
+        Log.d("EditTransactionScreen", "Method: ${method.value}")
+        Log.d("EditTransactionScreen", "TypeDetail: ${typeDetail.value}")
+        Log.d("EditTransactionScreen", "Note: ${note.value}")
+    }
+
 }
