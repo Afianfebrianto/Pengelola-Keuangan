@@ -25,13 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.component.TransactionItem
+import com.project.pengelolakeuangan.ui.navigation.Screen
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
-fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: TransaksiViewModel) {
+fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: TransaksiViewModel, navController: NavHostController,) {
     val transactions by viewModel.transactions.observeAsState(emptyList())
     LaunchedEffect(Unit) {
         viewModel.getAllTransactions()  // Memanggil getAllTransactions saat HomeScreen pertama kali ditampilkan
@@ -98,7 +100,10 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: T
         Column(modifier = Modifier.fillMaxSize()) {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(transactions) { transaction ->
-                    TransactionItem(transaction = transaction)
+                    TransactionItem(transaction = transaction, onClick = { selectedTransaction ->
+//                        navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
+                        navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id))
+                    })
                 }
             }
         }

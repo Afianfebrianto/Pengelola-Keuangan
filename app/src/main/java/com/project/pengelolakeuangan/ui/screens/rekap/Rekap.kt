@@ -1,5 +1,6 @@
 package com.project.pengelolakeuangan.ui.screens.rekap
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -153,7 +154,9 @@ fun RekapScreen0(navController: NavHostController, viewModel: TransaksiViewModel
 
 //             Item transaksi
             items(transactions) { transaction ->
-                TransactionItem(transaction = transaction)
+                TransactionItem(transaction = transaction, onClick = { selectedTransaction ->
+                    navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
+                })
             }
         }
     }
@@ -300,7 +303,9 @@ fun RekapScreen1(navController: NavHostController, viewModel: TransaksiViewModel
 
             val transactionList = if (isYearlyReport.value) yearlyTransactions else transactions
             items(transactionList) { transaction ->
-                TransactionItem(transaction = transaction)
+                TransactionItem(transaction = transaction, onClick = { selectedTransaction ->
+                    navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
+                })
             }
         }
     }
@@ -465,10 +470,16 @@ fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel)
 
             val transactionList = if (isYearlyReport.value) yearlyTransactions else transactions
             items(transactionList) { transaction ->
-                TransactionItem(transaction = transaction)
+                TransactionItem(transaction = transaction,onClick = { selectedTransaction ->
+//                    navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
+                    navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id))
+                })
             }
+
+            Log.d("RekapScreen", "Transaksi Transactions: $transactionList")
         }
     }
+
 }
 
 

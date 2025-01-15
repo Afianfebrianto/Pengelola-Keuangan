@@ -131,8 +131,9 @@ fun TransactionFormScreen(
                     }
 
                     val transaction = TransactionData(
+                        id = 0,
                         isIncome = isIncome,
-                        nominal = nominalValue,
+                        nominal = nominalValue.toDouble(),
                         date = selectedDate.value,
                         method = method.value,
                         detail = typeDetail.value,

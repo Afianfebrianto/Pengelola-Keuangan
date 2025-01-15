@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.project.pengelolakeuangan.R
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
-import com.project.pengelolakeuangan.utils.formatToRupiah
+import com.project.pengelolakeuangan.utils.formatToRupiahh
 import com.project.pengelolakeuangan.utils.getStoredName
 import com.project.pengelolakeuangan.utils.poppinsFamily
 import com.project.pengelolakeuangan.utils.saveName
@@ -159,7 +159,7 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
 
         // Nominal Kekayaan Bersih
         Text(
-            text = formatToRupiah(balance),
+            text = formatToRupiahh(balance),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(vertical = 8.dp),
             textAlign = TextAlign.Center,

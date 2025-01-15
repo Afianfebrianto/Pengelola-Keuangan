@@ -30,11 +30,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.data.TransactionData
 import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun SearchScreen(
+    navController: NavHostController,
     transactions: List<TransactionData>,
     onBackClick: () -> Unit
 ) {
@@ -118,7 +120,9 @@ fun SearchScreen(
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredTransactions) { transaction ->
-                        TransactionItem(transaction)
+                        TransactionItem(transaction, onClick = { selectedTransaction ->
+                            navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
+                        })
                     }
                 }
             }

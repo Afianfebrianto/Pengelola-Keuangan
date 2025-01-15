@@ -3,6 +3,7 @@ package com.project.pengelolakeuangan.data.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
 import kotlinx.coroutines.flow.Flow
@@ -60,5 +61,21 @@ interface TransactionDao {
     @Query("SELECT * FROM Pengeluaran WHERE tanggal BETWEEN :startDate AND :endDate")
     fun getPengeluaranByDate(startDate: String, endDate: String): List<Pengeluaran>
 
+    @Query("SELECT * FROM pemasukan WHERE id = :id")
+    suspend fun getPemasukanById(id: Int): Pemasukan?
 
+    @Query("SELECT * FROM pengeluaran WHERE id = :id")
+    suspend fun getPengeluaranById(id: Int): Pengeluaran?
+
+    @Update
+    suspend fun updatePemasukan(pemasukan: Pemasukan)
+
+    @Update
+    suspend fun updatePengeluaran(pengeluaran: Pengeluaran)
+
+    @Query("DELETE FROM pemasukan WHERE id = :id")
+    suspend fun deletePemasukanById(id: Int)
+
+    @Query("DELETE FROM pengeluaran WHERE id = :id")
+    suspend fun deletePengeluaranById(id: Int)
 }

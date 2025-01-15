@@ -1,5 +1,6 @@
 package com.project.pengelolakeuangan.ui.screens.beranda
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -138,13 +139,24 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
             balance = balance.toDouble()
         )
 
-        // Daftar Transaksi Terbaru
+        // Daftar Transaksi Terbaru lama
+//        LazyColumn(modifier = Modifier.fillMaxSize()) {
+//            items(filteredTransactions) { transaction ->
+//                TransactionItem(transaction = transaction)
+//            }
+//        }
+
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(filteredTransactions) { transaction ->
-                TransactionItem(transaction = transaction)
+                TransactionItem(transaction = transaction, onClick = { selectedTransaction ->
+                    navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id))
+                })
             }
         }
+
     }
+
+    Log.d("HomeScreen", "Filtered Transactions: $filteredTransactions")
 }
 
 

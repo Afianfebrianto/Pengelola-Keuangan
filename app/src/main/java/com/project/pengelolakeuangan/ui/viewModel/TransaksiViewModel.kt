@@ -15,10 +15,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.LocalTime
 
 class TransaksiViewModel(application: Application) : AndroidViewModel(application) {
 
     private val transactionDao: TransactionDao
+    private val _transaction = MutableLiveData<TransactionData?>()
+    val transaction: LiveData<TransactionData?> get() = _transaction
+
 
     init {
         val db = Room.databaseBuilder(
@@ -67,8 +71,9 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
     // Extension function untuk mengonversi Pemasukan ke TransactionData
     fun Pemasukan.toTransactionData(isIncome: Boolean): TransactionData {
         return TransactionData(
+            id = this.id,
             isIncome = isIncome,
-            nominal = this.nominal.toInt(),
+            nominal = this.nominal,
             date = LocalDate.parse(this.tanggal),
             method = this.metode,
             detail = this.sumberPemasukan,
@@ -79,8 +84,9 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
     // Extension function untuk mengonversi Pengeluaran ke TransactionData
     fun Pengeluaran.toTransactionData(isIncome: Boolean): TransactionData {
         return TransactionData(
+            id = this.id,
             isIncome = isIncome,
-            nominal = this.nominal.toInt(),
+            nominal = this.nominal,
             date = LocalDate.parse(this.tanggal),
             method = this.metode,
             detail = this.tujuanPengeluaran,
@@ -126,7 +132,94 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
 
+    fun fetchTransactionById(id: Int) {
+        viewModelScope.launch {
+            val result = getTransactionById(id)
+            _transaction.postValue(result)
+        }
+    }
+
+    fun saveTransaction(transaction: TransactionData) {
+        viewModelScope.launch {
+            updateTransaction(transaction)
+        }
+    }
+
+    fun removeTransaction(id: Int, isIncome: Boolean) {
+        viewModelScope.launch {
+            deleteTransaction(id, isIncome)
+        }
+    }
+
+
+    // Fungsi untuk mendapatkan transaksi berdasarkan ID
+    suspend fun getTransactionById(id: Int): TransactionData? {
+        val pemasukan = transactionDao.getPemasukanById(id)
+        if (pemasukan != null) {
+            return TransactionData(
+                id = pemasukan.id,
+                isIncome = true,
+                nominal = pemasukan.nominal,  // memastikan nominal menggunakan tipe Double
+                date = LocalDate.parse(pemasukan.tanggal),
+                method = pemasukan.metode ?: "",  // memastikan tidak null
+                detail = pemasukan.sumberPemasukan ?: "",  // memastikan tidak null
+                note = pemasukan.catatan ?: ""  // memastikan tidak null
+            )
+        }
+
+        val pengeluaran = transactionDao.getPengeluaranById(id)
+        if (pengeluaran != null) {
+            return TransactionData(
+                id = pengeluaran.id,
+                isIncome = false,
+                nominal = pengeluaran.nominal,  // memastikan nominal menggunakan tipe Double
+                date = LocalDate.parse(pengeluaran.tanggal),
+                method = pengeluaran.metode ?: "",  // memastikan tidak null
+                detail = pengeluaran.tujuanPengeluaran ?: "",  // memastikan tidak null
+                note = pengeluaran.catatan ?: ""  // memastikan tidak null
+            )
+        }
+
+        return null
+    }
+
+    // Fungsi untuk memperbarui transaksi
+    suspend fun updateTransaction(transaction: TransactionData) {
+        if (transaction.isIncome) {
+            val pemasukan = Pemasukan(
+                id = transaction.id,  // pastikan id adalah Int
+                tanggal = transaction.date.toString(),
+                waktu = LocalTime.now().toString(),
+                metode = transaction.method,
+                sumberPemasukan = transaction.detail,
+                catatan = transaction.note,
+                nominal = transaction.nominal.toDouble() // memastikan nominal bertipe Double
+            )
+            transactionDao.updatePemasukan(pemasukan)
+        } else {
+            val pengeluaran = Pengeluaran(
+                id = transaction.id,  // pastikan id adalah Int
+                tanggal = transaction.date.toString(),
+                waktu = LocalTime.now().toString(),
+                metode = transaction.method,
+                tujuanPengeluaran = transaction.detail,
+                catatan = transaction.note,
+                nominal = transaction.nominal.toDouble() // memastikan nominal bertipe Double
+            )
+            transactionDao.updatePengeluaran(pengeluaran)
+        }
+    }
+
+    // Fungsi untuk menghapus transaksi
+    suspend fun deleteTransaction(id: Int, isIncome: Boolean) {
+        if (isIncome) {
+            transactionDao.deletePemasukanById(id)
+        } else {
+            transactionDao.deletePengeluaranById(id)
+        }
+    }
 }
+
 
 
 
