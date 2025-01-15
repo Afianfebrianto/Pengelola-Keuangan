@@ -50,6 +50,8 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
         viewModel.getAllTransactions()  // Memanggil getAllTransactions saat HomeScreen pertama kali ditampilkan
     }
 
+
+
     val selectedDate = remember { mutableStateOf(LocalDate.now()) }
     val dateFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy")
 
@@ -134,9 +136,9 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
 
         // Ringkasan Keuangan
         FinancialSummary(
-            totalIncome = totalIncome.toDouble(),
-            totalExpense = totalExpense.toDouble(),
-            balance = balance.toDouble()
+            totalIncome = totalIncome,
+            totalExpense = totalExpense,
+            balance = balance
         )
 
         // Daftar Transaksi Terbaru lama
@@ -149,7 +151,7 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(filteredTransactions) { transaction ->
                 TransactionItem(transaction = transaction, onClick = { selectedTransaction ->
-                    navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id))
+                    navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id, selectedTransaction.isIncome))
                 })
             }
         }

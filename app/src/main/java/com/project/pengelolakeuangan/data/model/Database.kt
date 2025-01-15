@@ -11,7 +11,7 @@ data class Pemasukan(
     val metode: String, // Contoh: "Transfer Bank", "Tunai"
     val sumberPemasukan: String,
     val catatan: String?,
-    val nominal: Double
+    val nominal: Long
 )
 
 @Entity(tableName = "pengeluaran")
@@ -22,5 +22,5 @@ data class Pengeluaran(
     val metode: String, // Contoh: "Transfer Bank", "Tunai"
     val tujuanPengeluaran: String,
     val catatan: String?,
-    val nominal: Double
+    val nominal: Long
 )

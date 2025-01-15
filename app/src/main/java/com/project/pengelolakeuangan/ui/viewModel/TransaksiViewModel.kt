@@ -132,12 +132,13 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
 
-    fun fetchTransactionById(id: Int) {
+    fun fetchTransactionById(id: Int, isIncome: Boolean) {
         viewModelScope.launch {
-            val result = getTransactionById(id)
+            val result = getTransactionById(id, isIncome)
             _transaction.postValue(result)
         }
     }
+
 
     fun saveTransaction(transaction: TransactionData) {
         viewModelScope.launch {
@@ -152,34 +153,34 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
 
-    // Fungsi untuk mendapatkan transaksi berdasarkan ID
-    suspend fun getTransactionById(id: Int): TransactionData? {
-        val pemasukan = transactionDao.getPemasukanById(id)
-        if (pemasukan != null) {
-            return TransactionData(
-                id = pemasukan.id,
-                isIncome = true,
-                nominal = pemasukan.nominal,  // memastikan nominal menggunakan tipe Double
-                date = LocalDate.parse(pemasukan.tanggal),
-                method = pemasukan.metode ?: "",  // memastikan tidak null
-                detail = pemasukan.sumberPemasukan ?: "",  // memastikan tidak null
-                note = pemasukan.catatan ?: ""  // memastikan tidak null
-            )
+    suspend fun getTransactionById(id: Int, isIncome: Boolean): TransactionData? {
+        if (isIncome) {
+            val pemasukan = transactionDao.getPemasukanById(id)
+            if (pemasukan != null) {
+                return TransactionData(
+                    id = pemasukan.id,
+                    isIncome = true,
+                    nominal = pemasukan.nominal,
+                    date = LocalDate.parse(pemasukan.tanggal),
+                    method = pemasukan.metode ?: "",
+                    detail = pemasukan.sumberPemasukan ?: "",
+                    note = pemasukan.catatan ?: ""
+                )
+            }
+        } else {
+            val pengeluaran = transactionDao.getPengeluaranById(id)
+            if (pengeluaran != null) {
+                return TransactionData(
+                    id = pengeluaran.id,
+                    isIncome = false,
+                    nominal = pengeluaran.nominal,
+                    date = LocalDate.parse(pengeluaran.tanggal),
+                    method = pengeluaran.metode ?: "",
+                    detail = pengeluaran.tujuanPengeluaran ?: "",
+                    note = pengeluaran.catatan ?: ""
+                )
+            }
         }
-
-        val pengeluaran = transactionDao.getPengeluaranById(id)
-        if (pengeluaran != null) {
-            return TransactionData(
-                id = pengeluaran.id,
-                isIncome = false,
-                nominal = pengeluaran.nominal,  // memastikan nominal menggunakan tipe Double
-                date = LocalDate.parse(pengeluaran.tanggal),
-                method = pengeluaran.metode ?: "",  // memastikan tidak null
-                detail = pengeluaran.tujuanPengeluaran ?: "",  // memastikan tidak null
-                note = pengeluaran.catatan ?: ""  // memastikan tidak null
-            )
-        }
-
         return null
     }
 
@@ -193,7 +194,7 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
                 metode = transaction.method,
                 sumberPemasukan = transaction.detail,
                 catatan = transaction.note,
-                nominal = transaction.nominal.toDouble() // memastikan nominal bertipe Double
+                nominal = transaction.nominal // memastikan nominal bertipe Double
             )
             transactionDao.updatePemasukan(pemasukan)
         } else {
@@ -204,7 +205,7 @@ class TransaksiViewModel(application: Application) : AndroidViewModel(applicatio
                 metode = transaction.method,
                 tujuanPengeluaran = transaction.detail,
                 catatan = transaction.note,
-                nominal = transaction.nominal.toDouble() // memastikan nominal bertipe Double
+                nominal = transaction.nominal // memastikan nominal bertipe Double
             )
             transactionDao.updatePengeluaran(pengeluaran)
         }

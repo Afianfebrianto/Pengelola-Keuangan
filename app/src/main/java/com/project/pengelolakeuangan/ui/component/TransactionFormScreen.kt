@@ -133,7 +133,7 @@ fun TransactionFormScreen(
                     val transaction = TransactionData(
                         id = 0,
                         isIncome = isIncome,
-                        nominal = nominalValue.toDouble(),
+                        nominal = nominalValue.toLong(),
                         date = selectedDate.value,
                         method = method.value,
                         detail = typeDetail.value,

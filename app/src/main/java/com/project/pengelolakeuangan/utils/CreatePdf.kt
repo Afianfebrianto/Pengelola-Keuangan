@@ -70,8 +70,8 @@ fun createPDF(
     canvas.drawText("Periode: $startDate - $endDate", 150f, 90f, paint)
 
     // Total Pemasukan dan Pengeluaran
-    val totalPemasukan = pemasukanList.sumOf { it.nominal }
-    val totalPengeluaran = pengeluaranList.sumOf { it.nominal }
+    val totalPemasukan = pemasukanList.sumOf { it.nominal }.toDouble()
+    val totalPengeluaran = pengeluaranList.sumOf { it.nominal }.toDouble()
     canvas.drawText("Total Pemasukan: Rp ${totalPemasukan.formatCurrency()}", 150f, 110f, paint)
     canvas.drawText("Total Pengeluaran: Rp ${totalPengeluaran.formatCurrency()}", 150f, 130f, paint)
 
@@ -89,7 +89,7 @@ fun createPDF(
                 it.metode,
                 it.tujuanPengeluaran,
                 it.catatan ?: "-",
-                it.nominal.formatCurrency()
+                it.nominal.toDouble().formatCurrency()
             )
         },
         yOffset = yOffset,
@@ -111,7 +111,7 @@ fun createPDF(
                 it.metode,
                 it.sumberPemasukan,
                 it.catatan ?: "-",
-                it.nominal.formatCurrency()
+                it.nominal.toDouble().formatCurrency()
             )
         },
         yOffset = yOffset,

@@ -102,7 +102,7 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: T
                 items(transactions) { transaction ->
                     TransactionItem(transaction = transaction, onClick = { selectedTransaction ->
 //                        navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
-                        navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id))
+                        navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id, selectedTransaction.isIncome))
                     })
                 }
             }

@@ -40,8 +40,10 @@ sealed class Screen(val route: String) {
     object Form : Screen("form/{isIncome}") {
         fun createRoute(isIncome: Boolean) = "form/$isIncome"
     }
-    object EditTransaction : Screen("edit_transaction_screen/{transactionId}") {
-        fun createRoute(transactionId: Int) = "edit_transaction_screen/$transactionId"
+    object EditTransaction : Screen("edit_transaction_screen/{transactionId}/{isIncome}") {
+        fun createRoute(transactionId: Int, isIncome: Boolean): String {
+            return "edit_transaction_screen/$transactionId/$isIncome"
+        }
     }
 
     object Search : Screen("search")
@@ -139,7 +141,7 @@ fun AppNavGraph(
                             metode = transaction.method,
                             sumberPemasukan = transaction.detail,
                             catatan = transaction.note,
-                            nominal = transaction.nominal.toDouble()
+                            nominal = transaction.nominal
                         )
                         viewModel.savePemasukan(pemasukan)
                     } else {
@@ -149,7 +151,7 @@ fun AppNavGraph(
                             metode = transaction.method,
                             tujuanPengeluaran = transaction.detail,
                             catatan = transaction.note,
-                            nominal = transaction.nominal.toDouble()
+                            nominal = transaction.nominal
                         )
                         viewModel.savePengeluaran(pengeluaran)
                     }
@@ -172,41 +174,50 @@ fun AppNavGraph(
         }
 
         composable(
-            route = Screen.EditTransaction.route,
-            arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
+            route = "edit_transaction_screen/{transactionId}/{isIncome}",
+            arguments = listOf(
+                navArgument("transactionId") { type = NavType.IntType },
+                navArgument("isIncome") { type = NavType.BoolType }
+            )
         ) { backStackEntry ->
             val transactionId = backStackEntry.arguments?.getInt("transactionId")
+            val isIncome = backStackEntry.arguments?.getBoolean("isIncome") ?: false
 
             if (transactionId != null) {
-                // Fetch transaction data
-                viewModel.fetchTransactionById(transactionId)
+                // Fetch transaction data based on transactionId and isIncome
+                viewModel.fetchTransactionById(transactionId, isIncome)
 
                 val transaction by viewModel.transaction.observeAsState()
 
                 if (transaction != null) {
                     EditTransactionScreen(
+                        isIncome = isIncome, // Pass isIncome to the EditTransactionScreen
                         transaction = transaction!!,
                         onSave = { updatedTransaction ->
                             viewModel.saveTransaction(updatedTransaction)
-                            navController.popBackStack() // Kembali ke layar sebelumnya setelah disimpan
+                            navController.popBackStack() // Navigate back after save
                         },
                         onDelete = { id ->
                             viewModel.removeTransaction(id, transaction!!.isIncome)
-                            navController.popBackStack() // Kembali ke layar sebelumnya setelah dihapus
+                            navController.popBackStack() // Navigate back after delete
                         },
                         onCancel = {
-                            navController.popBackStack() // Kembali ke layar sebelumnya
+                            navController.popBackStack() // Navigate back without changes
                         }
                     )
                 } else {
-                    // Menampilkan loading sementara data belum siap
+                    // Show loading text while data is loading
                     Text("Memuat data transaksi...", modifier = Modifier.padding(16.dp))
                 }
             } else {
-                // Menampilkan pesan kesalahan jika ID tidak valid
+                // Show error message if transactionId is invalid
                 Text("ID Transaksi tidak valid", modifier = Modifier.padding(16.dp))
             }
         }
+
+
+
+
 
 
     }

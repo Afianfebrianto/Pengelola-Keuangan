@@ -132,9 +132,9 @@ fun RekapScreen0(navController: NavHostController, viewModel: TransaksiViewModel
         val balance = totalIncome - totalExpense
 
         FinancialSummary(
-            totalIncome = totalIncome.toDouble(),
-            totalExpense = totalExpense.toDouble(),
-            balance = balance.toDouble()
+            totalIncome = totalIncome,
+            totalExpense = totalExpense,
+            balance = balance
         )
 
         // LazyColumn untuk DonutChart dan transaksi
@@ -283,9 +283,9 @@ fun RekapScreen1(navController: NavHostController, viewModel: TransaksiViewModel
         val balance = totalIncome - totalExpense
 
         FinancialSummary(
-            totalIncome = totalIncome.toDouble(),
-            totalExpense = totalExpense.toDouble(),
-            balance = balance.toDouble()
+            totalIncome = totalIncome,
+            totalExpense = totalExpense,
+            balance = balance
         )
 
         LazyColumn(
@@ -450,9 +450,9 @@ fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel)
         val balance = totalIncome - totalExpense
 
         FinancialSummary(
-            totalIncome = totalIncome.toDouble(),
-            totalExpense = totalExpense.toDouble(),
-            balance = balance.toDouble()
+            totalIncome = totalIncome,
+            totalExpense = totalExpense,
+            balance = balance
         )
 
         LazyColumn(
@@ -472,7 +472,7 @@ fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel)
             items(transactionList) { transaction ->
                 TransactionItem(transaction = transaction,onClick = { selectedTransaction ->
 //                    navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
-                    navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id))
+                    navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id, selectedTransaction.isIncome))
                 })
             }
 

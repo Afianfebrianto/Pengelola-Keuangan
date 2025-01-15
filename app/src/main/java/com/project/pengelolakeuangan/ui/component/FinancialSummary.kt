@@ -22,9 +22,9 @@ import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
 fun FinancialSummary(
-    totalIncome: Double,
-    totalExpense: Double,
-    balance: Double
+    totalIncome: Long,
+    totalExpense: Long,
+    balance: Long
 ) {
     Card(
         modifier = Modifier

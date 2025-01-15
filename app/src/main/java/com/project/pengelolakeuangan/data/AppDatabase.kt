@@ -6,7 +6,7 @@ import com.project.pengelolakeuangan.data.dao.TransactionDao
 import com.project.pengelolakeuangan.data.model.Pemasukan
 import com.project.pengelolakeuangan.data.model.Pengeluaran
 
-@Database(entities = [Pemasukan::class, Pengeluaran::class], version = 1)
+@Database(entities = [Pemasukan::class, Pengeluaran::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
 }
