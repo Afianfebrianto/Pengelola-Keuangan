@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.data.TransactionData
+import com.project.pengelolakeuangan.ui.navigation.Screen
 import com.project.pengelolakeuangan.utils.poppinsFamily
 
 @Composable
@@ -121,7 +122,7 @@ fun SearchScreen(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredTransactions) { transaction ->
                         TransactionItem(transaction, onClick = { selectedTransaction ->
-                            navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
+                            navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id, selectedTransaction.isIncome))
                         })
                     }
                 }
