@@ -113,7 +113,7 @@ fun WelcomeScreen2(onFinishClick: () -> Unit) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun WelcomeScreens(onFinish: () -> Unit) {
+fun WelcomeScreens1(onFinish: () -> Unit) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -125,6 +125,27 @@ fun WelcomeScreens(onFinish: () -> Unit) {
                 }
             )
 
+            1 -> WelcomeScreen2(
+                onFinishClick = { onFinish() }
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun WelcomeScreens(onFinish: () -> Unit) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+
+    HorizontalPager(count = 2, state = pagerState) {
+        when (it) {
+            0 -> WelcomeScreen1(
+                onNextClick = {
+                    coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                }
+            )
             1 -> WelcomeScreen2(
                 onFinishClick = { onFinish() }
             )
