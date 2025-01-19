@@ -18,42 +18,6 @@ import com.project.pengelolakeuangan.utils.formatToRupiahh
 import com.project.pengelolakeuangan.utils.poppinsFamily
 import java.time.format.DateTimeFormatter
 
-// Item untuk menampilkan satu transaksi
-@Composable
-fun TransactionItem1(transaction: TransactionData) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 4.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = transaction.date.format(DateTimeFormatter.ofPattern("dd MMM yyyy")), fontFamily = poppinsFamily)
-                Text(text = transaction.method, style = MaterialTheme.typography.body2, fontFamily = poppinsFamily)
-                Text(text = transaction.detail, style = MaterialTheme.typography.body2, fontFamily = poppinsFamily)
-            }
-
-            // Nominal dengan format Rp
-            Text(
-                text = if (transaction.isIncome) "${formatToRupiahh(transaction.nominal)}"
-                else "-${formatToRupiahh(transaction.nominal)}",
-                style = MaterialTheme.typography.h6,
-                color = if (transaction.isIncome) Color(0xFF4CAF50) else Color(0xFFF44336),
-                fontFamily = poppinsFamily
-
-            )
-        }
-    }
-}
-
 @Composable
 fun TransactionItem(transaction: TransactionData, onClick: (TransactionData) -> Unit) {
     Card(

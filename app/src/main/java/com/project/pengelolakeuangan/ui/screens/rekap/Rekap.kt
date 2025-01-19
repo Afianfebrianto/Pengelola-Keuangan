@@ -1,6 +1,7 @@
 package com.project.pengelolakeuangan.ui.screens.rekap
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -477,6 +478,15 @@ fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel)
             }
 
             Log.d("RekapScreen", "Transaksi Transactions: $transactionList")
+        }
+    }
+    // BackHandler untuk menangani back press
+    BackHandler {
+        // Mengarahkan kembali ke HomeScreen jika berada di halaman selain HomeScreen
+        navController.navigate(Screen.Home.route) {
+            // Menghapus seluruh stack navigasi yang ada sebelum HomeScreen
+            popUpTo(Screen.Home.route) { inclusive = true }
+            launchSingleTop = true
         }
     }
 

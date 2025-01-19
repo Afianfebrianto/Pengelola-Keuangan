@@ -1,5 +1,6 @@
 package com.project.pengelolakeuangan.ui.screens.transaksi
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -106,6 +107,16 @@ fun TransactionsScreen(navigateToForm: (isIncome: Boolean) -> Unit, viewModel: T
                     })
                 }
             }
+        }
+    }
+
+    // BackHandler untuk menangani back press
+    BackHandler {
+        // Mengarahkan kembali ke HomeScreen jika berada di halaman selain HomeScreen
+        navController.navigate(Screen.Home.route) {
+            // Menghapus seluruh stack navigasi yang ada sebelum HomeScreen
+            popUpTo(Screen.Home.route) { inclusive = true }
+            launchSingleTop = true
         }
     }
 }

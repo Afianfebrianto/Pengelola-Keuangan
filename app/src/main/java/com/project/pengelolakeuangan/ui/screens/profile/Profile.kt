@@ -1,5 +1,6 @@
 package com.project.pengelolakeuangan.ui.screens.profile
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.project.pengelolakeuangan.R
+import com.project.pengelolakeuangan.ui.navigation.Screen
 import com.project.pengelolakeuangan.ui.viewModel.TransaksiViewModel
 import com.project.pengelolakeuangan.utils.formatToRupiahh
 import com.project.pengelolakeuangan.utils.getStoredName
@@ -187,6 +189,16 @@ fun ProfileScreen(navController: NavController, viewModel: TransaksiViewModel) {
                 style = MaterialTheme.typography.body1,
                 fontFamily = poppinsFamily
             )
+        }
+    }
+
+    // BackHandler untuk menangani back press
+    BackHandler {
+        // Mengarahkan kembali ke HomeScreen jika berada di halaman selain HomeScreen
+        navController.navigate(Screen.Home.route) {
+            // Menghapus seluruh stack navigasi yang ada sebelum HomeScreen
+            popUpTo(Screen.Home.route) { inclusive = true }
+            launchSingleTop = true
         }
     }
 }
