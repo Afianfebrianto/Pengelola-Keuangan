@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.R
@@ -248,20 +249,20 @@ fun RekapScreen1(navController: NavHostController, viewModel: TransaksiViewModel
         if (isDialogOpen.value) {
             AlertDialog(
                 onDismissRequest = { isDialogOpen.value = false },
-                title = { Text(text = "Pilih Laporan") },
+                title = { Text(text = "Pilih Laporan", fontFamily = poppinsFamily, fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
                         TextButton(onClick = {
                             isYearlyReport.value = false
                             isDialogOpen.value = false
                         }) {
-                            Text(text = "Laporan Bulanan")
+                            Text(text = "Laporan Bulanan", fontFamily = poppinsFamily )
                         }
                         TextButton(onClick = {
                             isYearlyReport.value = true
                             isDialogOpen.value = false
                         }) {
-                            Text(text = "Laporan Tahunan")
+                            Text(text = "Laporan Tahunan" , fontFamily = poppinsFamily)
                         }
                     }
                 },
@@ -414,20 +415,20 @@ fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel)
         if (isDialogOpen.value) {
             AlertDialog(
                 onDismissRequest = { isDialogOpen.value = false },
-                title = { Text(text = "Pilih Laporan") },
+                title = { Text(text = "Pilih Laporan", fontFamily = poppinsFamily, fontWeight = FontWeight.Bold)},
                 text = {
                     Column {
                         TextButton(onClick = {
                             isYearlyReport.value = false // Pilih laporan bulanan
                             isDialogOpen.value = false
                         }) {
-                            Text(text = "Laporan Bulanan")
+                            Text(text = "Laporan Bulanan", fontFamily = poppinsFamily)
                         }
                         TextButton(onClick = {
                             isYearlyReport.value = true // Pilih laporan tahunan
                             isDialogOpen.value = false
                         }) {
-                            Text(text = "Laporan Tahunan")
+                            Text(text = "Laporan Tahunan", fontFamily = poppinsFamily)
                         }
                     }
                 },
@@ -471,7 +472,6 @@ fun RekapScreen(navController: NavHostController, viewModel: TransaksiViewModel)
             val transactionList = if (isYearlyReport.value) yearlyTransactions else transactions
             items(transactionList) { transaction ->
                 TransactionItem(transaction = transaction,onClick = { selectedTransaction ->
-//                    navController.navigate("edit_transaction_screen/${selectedTransaction.id}")
                     navController.navigate(Screen.EditTransaction.createRoute(selectedTransaction.id, selectedTransaction.isIncome))
                 })
             }

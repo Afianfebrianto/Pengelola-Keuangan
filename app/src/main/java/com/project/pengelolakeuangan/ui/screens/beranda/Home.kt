@@ -141,12 +141,6 @@ fun HomeScreen(navController: NavHostController, viewModel: TransaksiViewModel) 
             balance = balance
         )
 
-        // Daftar Transaksi Terbaru lama
-//        LazyColumn(modifier = Modifier.fillMaxSize()) {
-//            items(filteredTransactions) { transaction ->
-//                TransactionItem(transaction = transaction)
-//            }
-//        }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(filteredTransactions) { transaction ->
