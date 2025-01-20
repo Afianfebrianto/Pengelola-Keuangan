@@ -72,9 +72,11 @@ fun createPDF(
     // Total Pemasukan dan Pengeluaran
     val totalPemasukan = pemasukanList.sumOf { it.nominal }.toDouble()
     val totalPengeluaran = pengeluaranList.sumOf { it.nominal }.toDouble()
+    val totalSaldo = totalPemasukan - totalPengeluaran // Menghitung total saldo
+
     canvas.drawText("Total Pemasukan: Rp ${totalPemasukan.formatCurrency()}", 150f, 110f, paint)
     canvas.drawText("Total Pengeluaran: Rp ${totalPengeluaran.formatCurrency()}", 150f, 130f, paint)
-
+    canvas.drawText("Total Saldo: Rp ${totalSaldo.formatCurrency()}", 150f, 150f, paint) // Menambahkan total saldo
     // Posisi awal untuk tabel
     var yOffset = 160f
 

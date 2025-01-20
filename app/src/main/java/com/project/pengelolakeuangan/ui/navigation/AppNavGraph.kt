@@ -2,7 +2,9 @@ package com.project.pengelolakeuangan.ui.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -18,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,29 +37,6 @@ import com.project.pengelolakeuangan.utils.poppinsFamily
 fun MainScreen(navController: NavHostController, viewModel: TransaksiViewModel) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
-    val context = LocalContext.current
-    // Menangani back press
-    // Menangani back press
-//    BackHandler {
-//        // Akses LocalContext di dalam Composable
-//
-//        Log.d("BackHandler", "Current route: $currentRoute") // Log route saat ini
-//
-//        if (currentRoute == Screen.Home.route) {
-//            // Jika berada di halaman Home, keluar aplikasi
-//            Log.d("BackHandler", "User is on Home screen, exiting app.")
-//            (context as? Activity)?.finish() // Keluar aplikasi
-//        } else {
-//            // Jika tidak, kembali ke halaman Home dan membersihkan tumpukan navigasi
-//            Log.d("BackHandler", "Navigating back to Home screen and clearing previous screens.")
-//            navController.popBackStack(Screen.Home.route, false)
-//            navController.navigate(Screen.Home.route) {
-//                // Membersihkan semua layar sebelumnya dari tumpukan
-//                popUpTo(Screen.Home.route) { inclusive = true }
-//                launchSingleTop = true
-//            }
-//        }
-//    }
 
     Scaffold(
         bottomBar = {
@@ -99,7 +77,6 @@ fun BottomNavigationPreview() {
     )
 }
 
-
 @Composable
 fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit) {
     val items = listOf(
@@ -110,6 +87,67 @@ fun BottomNavigationBar(currentRoute: String?, onItemSelected: (String) -> Unit)
     )
 
     BottomNavigation(
+        modifier = Modifier.height(80.dp),
+        backgroundColor = Color.Transparent, // Menghilangkan latar belakang BottomNavigation
+        elevation = 0.dp // Menghilangkan shadow
+    ) {
+        items.forEach { (screen, iconRes) ->
+            BottomNavigationItem(
+                selected = currentRoute == screen.route,
+                onClick = { onItemSelected(screen.route) },
+                icon = {
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp) // Ukuran lingkaran diperbesar
+                            .clip(CircleShape) // Membuat lingkaran
+                            .background(Color(0xFFF58B76)) // Warna #F58B76
+                            .padding(10.dp) // Padding lebih besar agar ikon sedikit lebih besar
+                    ) {
+                        Icon(
+                            painter = painterResource(id = iconRes),
+                            contentDescription = screen.route,
+                            modifier = Modifier.align(Alignment.Center) // Menyusun icon di tengah
+                        )
+                    }
+
+                },
+
+                label = {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally, // Menyusun label di tengah
+                        modifier = Modifier.fillMaxWidth().height(25.dp)
+                    ) {
+//                        Spacer(modifier = Modifier.height(7.dp)) // Menambah jarak antara icon dan label
+
+                        Text(
+                            fontFamily = poppinsFamily,
+                            text = screen.route.capitalize(),
+                            fontSize = 10.sp,
+                            color = Color.Black, // Menentukan warna teks
+                            maxLines = 1, // Membatasi satu baris
+                            overflow = TextOverflow.Ellipsis, // Menambahkan elipsis jika teks terlalu panjang
+                            textAlign = TextAlign.Center, // Menyusun teks di tengah
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                        )
+                    }
+                }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun BottomNavigationBar1(currentRoute: String?, onItemSelected: (String) -> Unit) {
+    val items = listOf(
+        Screen.Home to R.drawable.home,
+        Screen.Transaction to R.drawable.add,
+        Screen.Rekap to R.drawable.rekap,
+        Screen.Account to R.drawable.account_circle
+    )
+
+    BottomNavigation(
+        modifier = Modifier,
         backgroundColor = Color.Transparent, // Menghilangkan latar belakang BottomNavigation
         elevation = 0.dp // Menghilangkan shadow
     ) {
