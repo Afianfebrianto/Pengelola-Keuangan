@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -33,11 +34,177 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.project.pengelolakeuangan.utils.poppinsFamily
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+
+//test
 @Composable
 fun DownloadScreen(
+    navController: NavHostController,
+    onDownloadClick: (String, String) -> Unit, // Ubah menjadi suspend function
+    isLoading: Boolean // Tambahkan state loading
+) {
+    val context = LocalContext.current
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    val startDate = remember { mutableStateOf(LocalDate.now()) }
+    val endDate = remember { mutableStateOf(LocalDate.now().plusDays(1)) }
+    val showDatePicker = remember { mutableStateOf(false to "start") } // ("start" or "end")
+
+    val isValidPeriod = startDate.value.plusYears(1).isAfter(endDate.value)
+    var progressBarVisible by remember { mutableStateOf(false) } // State untuk ProgressBar
+
+    // Box digunakan untuk menempatkan elemen di tengah layar
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Download Rekapan Transaksi",
+                    style = MaterialTheme.typography.h6,
+                    fontFamily = poppinsFamily
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "Pilih Periode\nRentang periode maksimum 1 tahun.",
+                style = MaterialTheme.typography.body1,
+                fontFamily = poppinsFamily
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Dari*", style = MaterialTheme.typography.body2)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .background(
+                        Color.LightGray.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable { showDatePicker.value = true to "start" }
+                    .padding(16.dp)
+            ) {
+                Text(text = startDate.value.format(dateFormatter))
+            }
+
+            Text(text = "Sampai*", style = MaterialTheme.typography.body2, fontFamily = poppinsFamily)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .background(
+                        Color.LightGray.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable { showDatePicker.value = true to "end" }
+                    .padding(16.dp)
+            ) {
+                Text(text = endDate.value.format(dateFormatter), fontFamily = poppinsFamily)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    if (isValidPeriod) {
+                        progressBarVisible = true
+                        // Jalankan proses dalam coroutine
+                        CoroutineScope(Dispatchers.Main).launch {
+                            try {
+                                onDownloadClick(
+                                    startDate.value.toString(),
+                                    endDate.value.toString()
+                                )
+//                                Toast.makeText(context, "PDF berhasil dibuat!", Toast.LENGTH_SHORT)
+//                                    .show()
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Gagal membuat PDF: ${e.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } finally {
+                                progressBarVisible = false
+                            }
+                        }
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Periode maksimal hanya 1 tahun!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                },
+                enabled = isValidPeriod && !isLoading,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (isValidPeriod) Color(0xFFE91E63) else Color.Gray
+                )
+            ) {
+                Text(text = "Download", color = Color.White, fontFamily = poppinsFamily)
+            }
+
+            if (showDatePicker.value.first) {
+                DatePickerDialog(
+                    selectedDate = if (showDatePicker.value.second == "start") startDate.value else endDate.value,
+                    onDateSelected = { selectedDate ->
+                        if (showDatePicker.value.second == "start") {
+                            startDate.value = selectedDate
+                            if (endDate.value.isBefore(startDate.value)) {
+                                endDate.value = startDate.value.plusDays(1)
+                            }
+                        } else {
+                            endDate.value = selectedDate
+                            if (endDate.value.isBefore(startDate.value)) {
+                                startDate.value = endDate.value.minusDays(1)
+                            }
+                        }
+                        showDatePicker.value = false to ""
+                    },
+                    onDismissRequest = { showDatePicker.value = false to "" }
+                )
+            }
+        }
+    }
+}
+
+//fun onDownloadClick(startDate: String, endDate: String) = CoroutineScope(Dispatchers.IO).launch {
+//    createPDF(context, startDate, endDate, pemasukanList, pengeluaranList)
+//}
+
+
+
+
+//ori
+@Composable
+fun DownloadScreen1(
     navController: NavHostController,
     onDownloadClick: (String, String) -> Unit
 ) {

@@ -1,12 +1,16 @@
 package com.project.pengelolakeuangan.ui.navigation
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -76,20 +80,31 @@ fun AppNavGraph(
             SettingsScreen(viewModel = viewModel, navController = navController)
         }
 
+
+//        coba
         composable("download") {
             val coroutineScope = rememberCoroutineScope()
+            var isLoading by remember { mutableStateOf(false) } // State untuk loading
 
             DownloadScreen(
                 navController = navController,
+                isLoading = isLoading, // Kirim state loading ke layar
                 onDownloadClick = { startDate, endDate ->
                     coroutineScope.launch {
+                        Log.d("DownloadScreen", "Mulai proses download untuk periode: $startDate - $endDate")
+                        isLoading = true // Tampilkan ProgressBar
                         try {
                             val (filteredPemasukan, filteredPengeluaran) = viewModel.getDataForPeriod(
                                 startDate,
                                 endDate
                             )
+                            Log.d(
+                                "DownloadScreen",
+                                "Data berhasil diambil. Pemasukan: ${filteredPemasukan.size}, Pengeluaran: ${filteredPengeluaran.size}"
+                            )
 
                             if (filteredPemasukan.isEmpty() && filteredPengeluaran.isEmpty()) {
+                                Log.d("DownloadScreen", "Tidak ada data untuk periode ini.")
                                 Toast.makeText(
                                     context,
                                     "Tidak ada data untuk periode ini.",
@@ -105,18 +120,67 @@ fun AppNavGraph(
                                 pemasukanList = filteredPemasukan,
                                 pengeluaranList = filteredPengeluaran
                             )
+                            Log.d("DownloadScreen", "PDF berhasil dibuat.")
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            Log.e("DownloadScreen", "Gagal mengambil data: ${e.message}", e)
                             Toast.makeText(
                                 context,
                                 "Gagal mengambil data: ${e.message}",
                                 Toast.LENGTH_LONG
                             ).show()
+                        } finally {
+                            isLoading = false // Sembunyikan ProgressBar
+                            Log.d("DownloadScreen", "Proses selesai. isLoading diatur ke false.")
                         }
                     }
                 }
             )
         }
+
+
+
+//        ori
+//        composable("download") {
+//            val coroutineScope = rememberCoroutineScope()
+//
+//            DownloadScreen(
+//                navController = navController,
+//                onDownloadClick = { startDate, endDate ->
+//                    coroutineScope.launch {
+//                        try {
+//                            val (filteredPemasukan, filteredPengeluaran) = viewModel.getDataForPeriod(
+//                                startDate,
+//                                endDate
+//                            )
+//
+//                            if (filteredPemasukan.isEmpty() && filteredPengeluaran.isEmpty()) {
+//                                Toast.makeText(
+//                                    context,
+//                                    "Tidak ada data untuk periode ini.",
+//                                    Toast.LENGTH_LONG
+//                                ).show()
+//                                return@launch
+//                            }
+//
+//                            createPDF(
+//                                context = context,
+//                                startDate = startDate,
+//                                endDate = endDate,
+//                                pemasukanList = filteredPemasukan,
+//                                pengeluaranList = filteredPengeluaran
+//                            )
+//                        } catch (e: Exception) {
+//                            e.printStackTrace()
+//                            Toast.makeText(
+//                                context,
+//                                "Gagal mengambil data: ${e.message}",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+//                        }
+//                    }
+//                }
+//            )
+//        }
 
         composable(Screen.Rekap.route) {
             RekapScreen(navController = navController, viewModel = viewModel)
