@@ -72,7 +72,4 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-
-    //pdfmaker
-    implementation("com.itextpdf:itext7-core:7.2.3")
 }
