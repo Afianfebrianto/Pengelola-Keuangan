@@ -1,5 +1,4 @@
 [versions]
-accompanistCharts = "0.1.0"
 agp = "8.8.0"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -16,9 +15,10 @@ roomCompiler = "2.6.1"
 media3Exoplayer = "1.5.1"
 runtimeLivedata = "1.7.6"
 storage = "1.5.0"
+lottieCompose = "6.1.0"
 
 [libraries]
-accompanist-charts = { module = "com.google.accompanist:accompanist-charts", version.ref = "accompanistCharts" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }

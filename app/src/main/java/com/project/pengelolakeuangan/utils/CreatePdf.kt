@@ -53,8 +53,8 @@ fun createPDF(
     }
 
     // Header
-    val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.kucingjpg)
-    val resizedBitmap = Bitmap.createScaledBitmap(logoBitmap, 100, 100, false)
+    val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logoapp)
+    val resizedBitmap = Bitmap.createScaledBitmap(logoBitmap, 80,  66, false)
     canvas.drawBitmap(resizedBitmap, 50f, 50f, paint)
 //    canvas.drawBitmap(logoBitmap, 50f, 50f, paint)
 
