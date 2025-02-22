@@ -1,18 +1,7 @@
 package com.project.pengelolakeuangan.utils
 
-import android.icu.text.NumberFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-
-fun formatToRupiah(amount: Int): String {
-    val numberFormat = NumberFormat.getCurrencyInstance(java.util.Locale("id", "ID"))
-    return numberFormat.format(amount)
-}
-
-fun formatToRupiah(amount: Double): String {
-    val numberFormat = NumberFormat.getCurrencyInstance(java.util.Locale("id", "ID"))
-    return numberFormat.format(amount)
-}
 
 
 fun formatToRupiahh(amount: Long): String {

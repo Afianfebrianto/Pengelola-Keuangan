@@ -51,11 +51,6 @@ fun SplashScreen(onFinish: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MyLottie()
-//            Image(
-//                painter = painterResource(id = R.drawable.kucingg), // Ganti dengan logo Anda
-//                contentDescription = "Logo Aplikasi",
-//                modifier = Modifier.size(250.dp)
-//            )
             Text(
                 text = displayedText, // Teks dinamis yang muncul satu per satu
                 fontSize = 24.sp,

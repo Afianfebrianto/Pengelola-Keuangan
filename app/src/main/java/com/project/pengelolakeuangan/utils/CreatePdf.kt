@@ -23,7 +23,6 @@ import java.io.IOException
 import java.text.NumberFormat
 import java.util.Locale
 
-//coba ahh
 fun createPDF(
     context: Context,
     startDate: String,

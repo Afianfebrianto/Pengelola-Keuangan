@@ -1,6 +1,5 @@
 package com.project.pengelolakeuangan.ui.screens.splash
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,16 +9,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -38,13 +42,7 @@ fun WelcomeScreen1(onNextClick: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.kucing), // Ganti dengan gambar Anda
-            contentDescription = "Cat Image",
-            modifier = Modifier.size(150.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
+        AnimateManageMoney()
 
         Text(
             text = "Halo, Jadikan Keuanganmu\nLebih Terkendali!",
@@ -75,13 +73,7 @@ fun WelcomeScreen2(onFinishClick: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.kucingg), // Ganti dengan gambar Anda
-            contentDescription = "Cat Image",
-            modifier = Modifier.size(150.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
+        AnimateDompet()
 
         Text(
             text = "Selamat Datang",
@@ -111,25 +103,42 @@ fun WelcomeScreen2(onFinishClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun WelcomeScreens1(onFinish: () -> Unit) {
-    val pagerState = rememberPagerState()
-    val coroutineScope = rememberCoroutineScope()
+fun AnimateDompet() {
+    val preLoaderLottie by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.animation_dompet)
+    )
 
-    HorizontalPager(count = 2, state = pagerState) { page ->  // Ganti 'count' menjadi 'pageCount'
-        when (page) {
-            0 -> WelcomeScreen1(
-                onNextClick = {
-                    coroutineScope.launch { pagerState.animateScrollToPage(1) }
-                }
-            )
+    val preLoaderProgress by animateLottieCompositionAsState(preLoaderLottie,
+        isPlaying = true,
+        iterations = LottieConstants.IterateForever,
+    )
 
-            1 -> WelcomeScreen2(
-                onFinishClick = { onFinish() }
-            )
-        }
-    }
+    LottieAnimation(
+        composition = preLoaderLottie,
+        progress = {preLoaderProgress},
+        modifier = Modifier.size(150.dp)
+    )
+
+}
+
+@Composable
+fun AnimateManageMoney() {
+    val preLoaderLottie by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.animation_manage_money)
+    )
+
+    val preLoaderProgress by animateLottieCompositionAsState(preLoaderLottie,
+        isPlaying = true,
+        iterations = LottieConstants.IterateForever,
+    )
+
+    LottieAnimation(
+        composition = preLoaderLottie,
+        progress = {preLoaderProgress},
+        modifier = Modifier.size(300.dp)
+    )
+
 }
 
 
